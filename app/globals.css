@@ -224,23 +224,11 @@ img {
   clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
 }
 
-/* Rotating gradient trace along a panel's own border — replaces static
-   corner brackets with something that actually belongs to the glass edge
-   itself rather than an overlay shape fighting the panel's rounding.
-   Degrades gracefully to a static gradient ring where @property isn't
-   supported, instead of breaking. */
-@property --border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes rotate-border-angle {
-  to {
-    --border-angle: 360deg;
-  }
-}
-
+/* Static glass-edge highlight along a panel's own border — a soft diagonal
+   rim-light, brightest where light would naturally catch an actual pane of
+   glass (top-left), fading through faint accent tints, dim on the far
+   (bottom-right) edge. No motion — a rotating version of this read as busy
+   once several panels were on screen with it running at once. */
 .glass-glow-border {
   position: relative;
 }
@@ -251,27 +239,18 @@ img {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: conic-gradient(
-    from var(--border-angle),
-    transparent 0%,
-    rgba(74, 151, 245, 0.9) 8%,
-    transparent 22%,
-    transparent 55%,
-    rgba(245, 169, 58, 0.8) 64%,
-    transparent 78%
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(74, 151, 245, 0.16) 28%,
+    rgba(255, 255, 255, 0.05) 52%,
+    rgba(245, 169, 58, 0.12) 76%,
+    rgba(255, 255, 255, 0.28) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: rotate-border-angle 7s linear infinite;
   pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hud-grid,
-  .glass-glow-border::before {
-    animation: none;
-  }
 }
 
 /* Vibrant flowing gradient + a slow brightness breathe — reserved for the
@@ -313,7 +292,8 @@ img {
   .ambient-blob-accent,
   .ambient-blob-signal,
   .ambient-blob-violet,
-  .hero-cta-title {
+  .hero-cta-title,
+  .hud-grid {
     animation: none;
   }
 }
