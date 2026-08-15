@@ -104,6 +104,7 @@ export default function Home() {
             display: "flex",
             flexWrap: "wrap",
             alignItems: "center",
+            justifyContent: "center",
             gap: space.lg,
             ...glassSurface(),
             borderRadius: radius.lg,
