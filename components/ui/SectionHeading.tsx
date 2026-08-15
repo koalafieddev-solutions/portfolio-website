@@ -41,10 +41,11 @@ export function SectionHeading({ heading, subheading, index }: SectionHeadingPro
 
       <h2
         style={{
-          margin: 0,
+          margin: "0 auto",
+          maxWidth: 640,
           fontFamily: font.display,
           color: color.text,
-          fontSize: font.size.xl,
+          fontSize: "clamp(1.5rem, 5vw, 2rem)",
           fontWeight: font.weight.semibold,
           letterSpacing: -0.5,
         }}

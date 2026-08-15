@@ -47,7 +47,7 @@ export function ProjectGrid({ heading, subheading, projects, columns = 3, featur
         variants={staggerContainer}
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(auto-fit, minmax(${minItemWidth}px, 1fr))`,
+          gridTemplateColumns: `repeat(auto-fit, minmax(min(${minItemWidth}px, 100%), 1fr))`,
           gap: space.lg,
         }}
       >

@@ -182,7 +182,7 @@ export default function Home() {
           position: "relative",
           maxWidth: layout.maxWidth,
           margin: `${space.xl}px auto`,
-          padding: `${space.xxl}px ${space.lg}px`,
+          padding: `clamp(40px, 10vw, ${space.xxl}px) clamp(20px, 6vw, ${space.lg}px)`,
           textAlign: "center",
           ...glassSurface(true),
           borderRadius: radius.lg,

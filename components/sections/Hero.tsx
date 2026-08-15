@@ -104,7 +104,7 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
           gap: space.sm,
           maxWidth: layout.maxWidth,
           margin: "0 auto",
-          padding: `${space.xxl}px ${space.lg}px`,
+          padding: `clamp(48px, 12vw, ${space.xxl}px) clamp(16px, 5vw, ${space.lg}px)`,
           textAlign: "center",
         }}
       >
@@ -115,7 +115,7 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
             flexDirection: "column",
             alignItems: "center",
             gap: space.md,
-            padding: `${space.xl}px ${space.xxl}px`,
+            padding: `clamp(24px, 6vw, ${space.xl}px) clamp(8px, 5vw, ${space.xxl}px)`,
           }}
         >
           <CornerMark position="tl" />
@@ -163,9 +163,9 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
             style={{
               margin: 0,
               color: color.textMuted,
-              fontSize: font.size.md,
+              fontSize: "clamp(0.9rem, 3.6vw, 1.03125rem)",
               fontWeight: font.weight.regular,
-              lineHeight: 1.65,
+              lineHeight: 1.6,
               maxWidth: 600,
             }}
           >
