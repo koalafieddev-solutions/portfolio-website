@@ -1,0 +1,43 @@
+[
+  {
+    "title": "Interaction System",
+    "description": "A flexible, Blueprint-first interaction framework — doors, buttons, elevators, pickups — built for fast prototyping and easy extension. Selected for an Epic Games sponsorship — a \"Sponsored Content Award and Featured\" Marketplace feature — in June 2023.",
+    "tag": "Marketplace Asset",
+    "image": { "src": "/images/products/interaction-system.png", "alt": "Interaction System showcase" },
+    "href": "",
+    "highlight": true,
+    "meta": [{ "value": "2022", "label": "live since" }]
+  },
+  {
+    "title": "Modular Building System",
+    "description": "A grid-snapped modular building kit — walls, roofs, railings, and foundations — for assembling structures quickly in single-player worlds.",
+    "tag": "Marketplace Asset",
+    "image": { "src": "/images/products/modular-building-system.jpg", "alt": "Modular Building System showcase" },
+    "href": "",
+    "meta": [{ "value": "2023", "label": "live since" }]
+  },
+  {
+    "title": "FPS Scope and Reticle Modular Creator",
+    "description": "A modular toolkit for building custom scopes, reticles, and weapon HUD overlays for Unreal Engine FPS projects — no per-scope custom code required.",
+    "tag": "Marketplace Asset",
+    "image": { "src": "/images/products/fps-scope-and-reticle-modular-creator.png", "alt": "FPS Scope and Reticle Modular Creator showcase" },
+    "href": "",
+    "meta": [{ "value": "2022", "label": "live since" }]
+  },
+  {
+    "title": "Building System | Multiplayer Ready",
+    "description": "A networked, replicated building and placement system designed for multiplayer survival and base-building games.",
+    "tag": "Marketplace Asset",
+    "image": { "src": "/images/products/multiplayer-ready-building-system.png", "alt": "Multiplayer-ready building system showcase" },
+    "href": "",
+    "meta": [{ "value": "2025", "label": "live since" }]
+  },
+  {
+    "title": "Stylized Nature and Environment Biomes",
+    "description": "A stylized environment asset pack — seasonal biomes, foliage, and nature scatter — for building vibrant, cohesive stylized worlds.",
+    "tag": "Marketplace Asset",
+    "image": { "src": "/images/products/stylized-nature-and-environment-biomes.png", "alt": "Stylized Nature and Environment Biomes showcase" },
+    "href": "",
+    "meta": [{ "value": "2024", "label": "live since" }]
+  }
+]

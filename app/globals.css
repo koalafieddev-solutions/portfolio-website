@@ -1,0 +1,208 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #08090b;
+  color: #f2f3f5;
+  font-family: var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background: rgba(91, 159, 232, 0.28);
+  color: #f2f3f5;
+}
+
+.scroll-row-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+}
+
+.scroll-row-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Slow, low-amplitude twinkle — a restrained nod to the aerospace theme, not a
+   decorative starfield. Amplitude and count are intentionally minimal. */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.star-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  animation-name: twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Single restrained pulse ring used for exactly one "currently active" state
+   (Timeline's live entry) — not reused as generic decoration elsewhere. */
+@keyframes signal-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.signal-ring {
+  animation: signal-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Large, near-static color fields — motion is barely perceptible, just
+   enough to keep the glass surfaces above them from feeling flat. */
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(3%, 4%) scale(1.05);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-4%, -3%) scale(1.06);
+  }
+}
+
+.ambient-blob-accent {
+  animation: drift-a 46s ease-in-out infinite;
+}
+
+.ambient-blob-signal {
+  animation: drift-b 54s ease-in-out infinite;
+}
+
+/* Vibrant flowing gradient + a slow brightness breathe — reserved for the
+   one closing CTA headline, not reused as a generic text treatment. */
+@keyframes gradient-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes title-breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.18);
+  }
+}
+
+.hero-cta-title {
+  display: inline-block;
+  background-image: linear-gradient(90deg, #f2b84d, #6ea8ff, #c084fc, #f2b84d);
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-flow 7s ease-in-out infinite, title-breathe 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-dot,
+  .signal-ring,
+  .ambient-blob-accent,
+  .ambient-blob-signal,
+  .hero-cta-title {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-links {
+    display: none !important;
+  }
+
+  .nav-toggle {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 761px) {
+  .nav-mobile-panel {
+    display: none !important;
+  }
+}
+
+/* Stats dashboard: 2 columns on small screens, 4 on desktop — hairline
+   dividers only appear between cells that are actually adjacent in the
+   current grid, so they never orphan on a row by themselves. */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.stats-grid > div {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stats-grid > div:nth-child(-n + 2) {
+  border-top: none;
+}
+
+.stats-grid > div:nth-child(odd) {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 641px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stats-grid > div {
+    border-top: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .stats-grid > div:last-child {
+    border-right: none;
+  }
+}

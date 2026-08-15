@@ -1,0 +1,48 @@
+{
+  "identity": {
+    "command": "whoami",
+    "value": "Simon Cura — Unreal Engine Developer, Aerospace Engineer"
+  },
+  "categories": [
+    {
+      "key": "skills",
+      "command": "cat stack.txt",
+      "title": "Skills",
+      "display": "tags",
+      "items": [
+        { "value": "Blueprint Visual Scripting" },
+        { "value": "C++" },
+        { "value": "Multiplayer & Replication" },
+        { "value": "Modular System Design" },
+        { "value": "UMG / UI Systems" },
+        { "value": "Marketplace Asset Packaging" },
+        { "value": "Materials & Shaders" },
+        { "value": "Gameplay & Combat Systems" }
+      ]
+    },
+    {
+      "key": "services",
+      "command": "ls services/",
+      "title": "Services",
+      "display": "detailed",
+      "items": [
+        { "value": "Contract Work", "description": "Unreal Engine development for hire, from prototypes to shipped features." },
+        { "value": "Marketplace Assets", "description": "Commercial systems built for the Unreal Engine Marketplace and Fab." },
+        { "value": "Custom Solutions", "description": "Bespoke tools and systems built to a project's exact spec." },
+        { "value": "Tooling & Pipelines", "description": "Editor tooling and workflows that speed up other developers' work." }
+      ]
+    },
+    {
+      "key": "highlights",
+      "command": "cat highlights.log",
+      "title": "Highlights",
+      "display": "checklist",
+      "items": [
+        { "value": "Epic \"Sponsored Content Award and Featured\" placement — hundreds of thousands more units shipped" },
+        { "value": "5 commercial assets live on the Unreal Engine Marketplace and Fab" },
+        { "value": "10+ years of Unreal Engine experience" },
+        { "value": "B.S. Aerospace Engineering (Astronautics Option), Embry-Riddle Aeronautical University" }
+      ]
+    }
+  ]
+}

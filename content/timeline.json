@@ -1,0 +1,54 @@
+[
+  {
+    "year": "10+ yrs ago",
+    "title": "Hobbyist Roots",
+    "description": "Started building small projects in Unreal Engine for fun — long before it was a job. In parallel, set a course toward a B.S. in Aerospace Engineering (Astronautics Option) at Embry-Riddle Aeronautical University. Two disciplines, one habit: designing complex systems and making sure every part talks to the others correctly.",
+    "tag": "Origins"
+  },
+  {
+    "year": "Oct 2022",
+    "title": "Marketplace Debut",
+    "description": "Shipped two commercial assets within days of each other on the Unreal Engine Marketplace. Oct 7: the Interaction System — a Blueprint-first framework for doors, buttons, elevators, and pickups. Oct 11: the FPS Scope and Reticle Modular Creator — a modular toolkit for building custom scopes and weapon HUD overlays without per-scope custom code. First time strangers were paying for something built after class.",
+    "tag": "Launch",
+    "assets": [
+      { "title": "Interaction System", "image": "/images/products/interaction-system.png" },
+      { "title": "FPS Scope and Reticle Modular Creator", "image": "/images/products/fps-scope-and-reticle-modular-creator.png" }
+    ]
+  },
+  {
+    "year": "Mar 2023",
+    "title": "Modular Building System Ships",
+    "description": "A grid-snapped modular construction kit for single-player worlds — walls, roofs, railings, foundations.",
+    "tag": "Launch",
+    "assets": [{ "title": "Modular Building System", "image": "/images/products/modular-building-system.jpg" }]
+  },
+  {
+    "year": "Jun 2023",
+    "title": "Epic Games Sponsorship",
+    "description": "The Interaction System was picked for an Epic Games sponsorship — a \"Sponsored Content Award and Featured\" placement on the Unreal Engine Marketplace — putting it in front of every developer browsing the store that month, plus a $7,500 contract bonus. It's the reason the units-shipped counter reads six figures.",
+    "tag": "Milestone",
+    "highlight": true
+  },
+  {
+    "year": "Late 2024",
+    "title": "Onto Fab",
+    "description": "Epic's Marketplace became Fab. Shipped the Stylized Nature & Environment Biomes pack — seasonal foliage and scatter systems — as the first asset built for the new storefront.",
+    "tag": "Launch",
+    "assets": [{ "title": "Stylized Nature & Environment Biomes", "image": "/images/products/stylized-nature-and-environment-biomes.png" }]
+  },
+  {
+    "year": "Aug 2025",
+    "title": "Multiplayer, for Real",
+    "description": "Shipped Building System | Multiplayer Ready — a fully replicated, networked building and placement system for survival and base-building games. The most technically ambitious asset yet.",
+    "tag": "Launch",
+    "assets": [{ "title": "Building System | Multiplayer Ready", "image": "/images/products/multiplayer-ready-building-system.png" }]
+  },
+  {
+    "year": "2026",
+    "title": "Full-Time on Unreal Engine",
+    "description": "Degree in hand, now going full-time into Unreal Engine development — running five live commercial assets, taking on contract work, and posting the tutorials that document how all of it gets built.",
+    "tag": "Now",
+    "highlight": true,
+    "live": true
+  }
+]

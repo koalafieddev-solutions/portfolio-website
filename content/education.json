@@ -1,0 +1,38 @@
+{
+  "institution": "Embry-Riddle Aeronautical University",
+  "campus": "Prescott, Arizona",
+  "degree": "B.S. Aerospace Engineering",
+  "specialization": "Astronautics Option",
+  "period": "Fall 2022 – Spring 2026",
+  "conferDate": "May 2026",
+  "valueProposition": [
+    "Spacecraft engineering doesn't leave room for \"close enough\" — a control system that's 95% correct is a control system that fails, and a design review won't let a bug ship because it's rare. That standard carries over directly: the same intolerance for untested edge cases and unhandled failure states shows up in every commercial asset I ship.",
+    "Coursework in spacecraft design, orbital mechanics, and controls theory builds systems-thinking as a default habit — modeling how one component's failure propagates through the rest, instrumenting things so problems are diagnosable instead of mysterious, and validating a design before committing to it. That's the same instinct behind a multiplayer building system that replicates cleanly instead of desyncing under load.",
+    "It also means being fluent in the math and physics most software work never touches — genuinely useful when a gameplay system needs real simulation instead of an approximation."
+  ],
+  "courseworkGroups": [
+    {
+      "category": "Spacecraft & Astrodynamics",
+      "courses": [
+        "Space Mechanics",
+        "Spacecraft Attitude Dynamics",
+        "Spacecraft Preliminary Design",
+        "Spacecraft Detail Design",
+        "Space Propulsion"
+      ]
+    },
+    {
+      "category": "Systems & Controls",
+      "courses": [
+        "Space Systems Engineering",
+        "Experimental Space Systems Engineering",
+        "Systems Engineering",
+        "Control Systems Analysis & Design"
+      ]
+    },
+    {
+      "category": "Core Aerospace",
+      "courses": ["Aerospace Structures I", "Aerodynamics II", "Space Weather"]
+    }
+  ]
+}
