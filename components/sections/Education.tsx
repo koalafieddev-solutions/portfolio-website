@@ -44,15 +44,15 @@ export function Education({ heading, subheading, data }: EducationProps) {
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
+        viewport={{ once: true, amount: 0.15, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
       >
         <motion.div
           variants={fadeUp}
+          className="glass-glow-border"
           style={{
             position: "relative",
             ...glassSurface(true),
-            borderTop: `2px solid ${color.accent}`,
             borderRadius: radius.lg,
             padding: space.lg,
             marginBottom: space.lg,
@@ -158,10 +158,13 @@ export function Education({ heading, subheading, data }: EducationProps) {
           {data.courseworkGroups.map((group) => (
             <div
               key={group.category}
+              className="glass-glow-border"
               style={{
+                position: "relative",
                 flex: "1 1 220px",
-                borderTop: `1px solid ${color.border}`,
-                paddingTop: space.sm,
+                ...glassSurface(),
+                borderRadius: radius.lg,
+                padding: space.md,
               }}
             >
               <h4

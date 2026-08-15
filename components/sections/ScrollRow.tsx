@@ -80,13 +80,18 @@ export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRo
         className="scroll-row-track"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
+        viewport={{ once: true, amount: 0.1, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
         style={{
           display: "flex",
           gap: space.md,
           overflowX: "auto",
-          paddingBottom: space.sm,
+          // overflow-x: auto forces the browser to also clip the y-axis
+          // (there's no way to keep it genuinely "visible" once the other
+          // axis isn't) — so cards' hover lift + shadow need real reserved
+          // space here, or they'd get cut off at the track's own edge.
+          paddingTop: space.md,
+          paddingBottom: space.xl,
         }}
       >
         {items.map((item, index) => (

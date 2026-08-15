@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { color, space, font, radius, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
+import { glassSurface } from "../../lib/glass"
 import { SectionHeading } from "../ui/SectionHeading"
 
 export interface ProfileItem {
@@ -109,7 +110,7 @@ export function Profile({ heading, subheading, identity, categories }: ProfilePr
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
+        viewport={{ once: true, amount: 0.15, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
       >
         <motion.div
@@ -143,9 +144,12 @@ export function Profile({ heading, subheading, identity, categories }: ProfilePr
             <motion.div
               key={category.key}
               variants={fadeUp}
+              className="glass-glow-border"
               style={{
-                borderTop: `1px solid ${color.border}`,
-                paddingTop: space.md,
+                position: "relative",
+                ...glassSurface(),
+                borderRadius: radius.lg,
+                padding: space.md,
               }}
             >
               <h3

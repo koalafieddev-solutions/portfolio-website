@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useSpring } from "framer-motion"
 import { color, radius, space, font } from "../../lib/theme"
 import { hoverLift, springSnappy } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
@@ -28,23 +28,54 @@ export interface CardProps {
 }
 
 export function Card({ title, description, image, tag, href, featured = false, meta, highlight = false }: CardProps) {
+  // Pointer-driven tilt — a physical sense of depth on interaction, layered
+  // on top of the existing lift/scale variant rather than replacing it.
+  const rotateX = useMotionValue(0)
+  const rotateY = useMotionValue(0)
+  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 28, mass: 0.6 })
+  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 28, mass: 0.6 })
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return
+    const rect = event.currentTarget.getBoundingClientRect()
+    const px = (event.clientX - rect.left) / rect.width - 0.5
+    const py = (event.clientY - rect.top) / rect.height - 0.5
+    rotateY.set(px * 5)
+    rotateX.set(-py * 5)
+  }
+
+  const handlePointerLeave = () => {
+    rotateX.set(0)
+    rotateY.set(0)
+  }
+
   const content = (
     <motion.div
       initial="rest"
       whileHover="hover"
       animate="rest"
       variants={hoverLift}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
       style={{
+        position: "relative",
         display: "flex",
         flexDirection: featured ? "row" : "column",
         flexWrap: featured ? "wrap" : "nowrap",
         ...glassSurface(),
-        borderColor: highlight ? "rgba(232, 169, 79, 0.32)" : color.glassBorder,
+        borderColor: highlight ? "rgba(245, 169, 58, 0.36)" : color.glassBorder,
         borderRadius: radius.lg,
-        overflow: "hidden",
+        // No overflow:hidden here — it would also clip this element's own
+        // box-shadow (a well-known CSS gotcha), silently killing the depth
+        // shadow from glassSurface()/hoverLift. The image wrapper below
+        // carries its own matching border-radius + overflow:hidden instead,
+        // so it still clips correctly without the outer card paying for it.
         fontFamily: font.family,
         cursor: href ? "pointer" : "default",
         height: "100%",
+        transformPerspective: 900,
+        rotateX: springRotateX,
+        rotateY: springRotateY,
       }}
     >
       {image?.src ? (
@@ -57,6 +88,7 @@ export function Card({ title, description, image, tag, href, featured = false, m
             minHeight: featured ? 260 : undefined,
             alignSelf: featured ? "stretch" : undefined,
             overflow: "hidden",
+            borderRadius: radius.lg,
           }}
         >
           <motion.div
@@ -74,16 +106,16 @@ export function Card({ title, description, image, tag, href, featured = false, m
           />
           {highlight ? (
             <span
+              className="chamfer-sm"
               style={{
                 position: "absolute",
                 top: space.sm,
                 left: space.sm,
                 padding: `3px ${space.xs}px`,
-                borderRadius: radius.sm,
-                backgroundColor: "rgba(232, 169, 79, 0.16)",
+                backgroundColor: "rgba(245, 169, 58, 0.18)",
                 backdropFilter: "blur(6px)",
                 WebkitBackdropFilter: "blur(6px)",
-                border: "1px solid rgba(232, 169, 79, 0.4)",
+                border: "1px solid rgba(245, 169, 58, 0.45)",
                 color: color.signalHover,
                 fontFamily: font.mono,
                 fontSize: font.size.xs,

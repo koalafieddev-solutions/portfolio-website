@@ -13,35 +13,13 @@ export interface HeroProps {
   children?: React.ReactNode
 }
 
-function CornerMark({ position }: { position: "tl" | "tr" | "bl" | "br" }) {
-  const vertical = position[0] === "t" ? { top: 0 } : { bottom: 0 }
-  const horizontal = position[1] === "l" ? { left: 0 } : { right: 0 }
-  const borderV = position[0] === "t" ? "borderTop" : "borderBottom"
-  const borderH = position[1] === "l" ? "borderLeft" : "borderRight"
-
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        position: "absolute",
-        ...vertical,
-        ...horizontal,
-        width: 18,
-        height: 18,
-        [borderV]: `1px solid ${color.borderStrong}`,
-        [borderH]: `1px solid ${color.borderStrong}`,
-      }}
-    />
-  )
-}
-
 export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: HeroProps) {
   const mouseX = useMotionValue(50)
   const mouseY = useMotionValue(35)
   const springX = useSpring(mouseX, { stiffness: 60, damping: 20, mass: 0.6 })
   const springY = useSpring(mouseY, { stiffness: 60, damping: 20, mass: 0.6 })
   const glowBackground = useTransform([springX, springY], ([x, y]) =>
-    `radial-gradient(ellipse 520px 400px at ${x}% ${y}%, rgba(91, 159, 232, 0.09), transparent 72%)`
+    `radial-gradient(ellipse 520px 400px at ${x}% ${y}%, rgba(74, 151, 245, 0.13), transparent 72%)`
   )
 
   const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
@@ -109,6 +87,7 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
         }}
       >
         <div
+          className="glass-glow-border"
           style={{
             position: "relative",
             display: "flex",
@@ -116,13 +95,9 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
             alignItems: "center",
             gap: space.md,
             padding: `clamp(24px, 6vw, ${space.xl}px) clamp(8px, 5vw, ${space.xxl}px)`,
+            borderRadius: 12,
           }}
         >
-          <CornerMark position="tl" />
-          <CornerMark position="tr" />
-          <CornerMark position="bl" />
-          <CornerMark position="br" />
-
           {eyebrow ? (
             <motion.span
               variants={fadeUp}

@@ -14,7 +14,7 @@ export interface StatTileProps {
 
 export function StatTile({ value, label, accent = "blue" }: StatTileProps) {
   const accentColor = accent === "amber" ? color.signal : color.accent
-  const glowRgb = accent === "amber" ? "232, 169, 79" : "91, 159, 232"
+  const glowRgb = accent === "amber" ? "245, 169, 58" : "74, 151, 245"
 
   return (
     <motion.div
@@ -45,7 +45,7 @@ export function StatTile({ value, label, accent = "blue" }: StatTileProps) {
           rest: {
             y: 0,
             scale: 1,
-            textShadow: `0 0 24px rgba(${glowRgb}, 0.2), 0 0 4px rgba(${glowRgb}, 0.12)`,
+            textShadow: `0 0 26px rgba(${glowRgb}, 0.28), 0 0 5px rgba(${glowRgb}, 0.18)`,
           },
           hover: {
             y: -2,

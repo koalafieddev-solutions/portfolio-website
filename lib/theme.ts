@@ -16,16 +16,16 @@ export const color = {
   text: "#F2F3F5",
   textMuted: "#9CA0AB",
   textFaint: "#5A5E68",
-  accent: "#5B9FE8",
-  accentHover: "#82B8F2",
-  accentMuted: "rgba(91, 159, 232, 0.12)",
+  accent: "#4A97F5",
+  accentHover: "#6FB0FF",
+  accentMuted: "rgba(74, 151, 245, 0.14)",
   accentText: "#08090B",
-  signal: "#E8A94F",
-  signalHover: "#F0BD70",
-  signalMuted: "rgba(232, 169, 79, 0.14)",
-  glass: "rgba(19, 21, 27, 0.55)",
-  glassStrong: "rgba(22, 24, 31, 0.72)",
-  glassBorder: "rgba(255, 255, 255, 0.14)",
+  signal: "#F5A93A",
+  signalHover: "#FFC24D",
+  signalMuted: "rgba(245, 169, 58, 0.16)",
+  glass: "rgba(19, 21, 27, 0.42)",
+  glassStrong: "rgba(22, 24, 31, 0.58)",
+  glassBorder: "rgba(255, 255, 255, 0.2)",
 } as const
 
 export const space = {
@@ -79,8 +79,8 @@ export const shadow = {
 export const gradient = {
   heroOverlay:
     "linear-gradient(180deg, rgba(8,9,11,0.25) 0%, rgba(8,9,11,0.85) 62%, rgba(8,9,11,1) 100%)",
-  accentGlow: "radial-gradient(circle at 25% 15%, rgba(91,159,232,0.14), transparent 55%)",
-  signalToAccent: "linear-gradient(90deg, #E8A94F, #5B9FE8)",
+  accentGlow: "radial-gradient(circle at 25% 15%, rgba(74,151,245,0.16), transparent 55%)",
+  signalToAccent: "linear-gradient(90deg, #F5A93A, #4A97F5)",
 } as const
 
 export const ease = {

@@ -97,7 +97,7 @@ export default function Home() {
           fontFamily: font.family,
         }}
       >
-        <SectionHeading heading="Currently" subheading="A snapshot of where my time is going right now." />
+        <SectionHeading heading="Currently" subheading="A snapshot of where my time is going right now." index="04" />
 
         <div
           style={{
@@ -162,7 +162,7 @@ export default function Home() {
           projects={products}
           columns={3}
           featuredIndex={0}
-          sectionIndex="04"
+          sectionIndex="05"
         />
       </div>
 
@@ -171,7 +171,7 @@ export default function Home() {
           heading="Tutorials"
           subheading="Character systems, combat, environment art, and UE5 fundamentals — scroll for more."
           items={tutorialVideos}
-          sectionIndex="05"
+          sectionIndex="06"
         />
         <ScrollRow heading="Setup Guides" items={setupGuideVideos} />
         <ScrollRow heading="Teasers, Devlogs & Demos" items={otherVideos} />
@@ -179,6 +179,7 @@ export default function Home() {
 
       <section
         id="contact"
+        className="glass-glow-border"
         style={{
           position: "relative",
           maxWidth: layout.maxWidth,
@@ -188,9 +189,29 @@ export default function Home() {
           ...glassSurface(true),
           borderRadius: radius.lg,
           fontFamily: font.family,
-          overflow: "hidden",
         }}
       >
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: space.xs,
+            marginBottom: space.xs,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: font.mono,
+              color: color.textFaint,
+              fontSize: font.size.xs,
+              letterSpacing: 1,
+            }}
+          >
+            07
+          </span>
+          <span style={{ width: 20, height: 1, backgroundColor: color.borderStrong }} />
+        </div>
+
         <h2
           className="hero-cta-title"
           style={{
@@ -257,6 +278,11 @@ export default function Home() {
       >
         <div
           style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: space.xs,
+            width: "100%",
             maxWidth: layout.maxWidth,
             margin: "0 auto",
             padding: `${space.lg}px`,
@@ -265,7 +291,18 @@ export default function Home() {
             fontSize: font.size.xs,
           }}
         >
-          © {new Date().getFullYear()} Simon Cura — Koalafied Dev
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: `linear-gradient(135deg, ${color.accent}, ${color.signal})`,
+              flexShrink: 0,
+            }}
+          />
+          <span>
+            <span style={{ fontFamily: font.mono }}>© {new Date().getFullYear()}</span> Simon Cura — Koalafied Dev
+          </span>
         </div>
       </footer>
     </main>

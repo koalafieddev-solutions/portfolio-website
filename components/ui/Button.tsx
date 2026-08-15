@@ -50,7 +50,8 @@ export function Button({ label, href, variant = "primary", fullWidth = false, on
     cursor: "pointer",
     textDecoration: "none",
     whiteSpace: "nowrap",
-    overflow: "hidden",
+    // No overflow:hidden — it would clip this element's own hover-glow
+    // box-shadow, and nothing here actually needs the clipping.
   }
 
   const Tag = href ? motion.a : motion.button
@@ -65,6 +66,10 @@ export function Button({ label, href, variant = "primary", fullWidth = false, on
       whileHover="hover"
       whileTap={{ scale: 0.97 }}
       animate="rest"
+      variants={{
+        rest: { boxShadow: "0 0 0 0 rgba(74, 151, 245, 0)" },
+        hover: { boxShadow: "0 0 0 1px rgba(74, 151, 245, 0.4), 0 4px 24px rgba(74, 151, 245, 0.3)" },
+      }}
       transition={springSnappy}
     >
       <motion.span

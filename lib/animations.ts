@@ -6,7 +6,6 @@
  * short travel distances, no floaty/decorative movement.
  */
 import type { Transition, Variants } from "framer-motion"
-import { shadow } from "./theme"
 
 export const springSnappy: Transition = {
   type: "spring",
@@ -17,17 +16,21 @@ export const springSnappy: Transition = {
 
 export const springSoft: Transition = {
   type: "spring",
-  stiffness: 260,
-  damping: 28,
+  stiffness: 240,
+  damping: 30,
   mass: 0.9,
 }
 
+// A slight blur-to-focus resolves alongside the rise + fade — reads as
+// something powering on / coming into focus rather than a plain slide,
+// without ever being slow enough to feel floaty.
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 18, filter: "blur(5px)" },
   visible: {
     opacity: 1,
     y: 0,
-    transition: springSoft,
+    filter: "blur(0px)",
+    transition: { ...springSoft, filter: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
   },
 }
 
@@ -43,18 +46,29 @@ export const staggerContainer: Variants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.03,
+      staggerChildren: 0.09,
+      delayChildren: 0.04,
     },
   },
 }
 
+// Mirrors glassSurface()'s own shadow exactly at rest (inset sheen + the
+// same two-layer outer shadow) so there's no visible jump on mount, then
+// lifts higher with a deeper shadow on hover — variants fully replace
+// boxShadow rather than merge with it, so this has to restate the sheen
+// on every keyframe or a hovered card would lose its glass highlight.
 export const hoverLift = {
-  rest: { y: 0, scale: 1, boxShadow: shadow.md },
+  rest: {
+    y: 0,
+    scale: 1,
+    boxShadow:
+      "inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 14px 36px rgba(0, 0, 0, 0.38), 0 3px 10px rgba(0, 0, 0, 0.26)",
+  },
   hover: {
-    y: -4,
-    scale: 1.008,
-    boxShadow: shadow.lg,
+    y: -6,
+    scale: 1.012,
+    boxShadow:
+      "inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 30px 68px rgba(0, 0, 0, 0.5), 0 8px 22px rgba(0, 0, 0, 0.32)",
     transition: springSnappy,
   },
 }

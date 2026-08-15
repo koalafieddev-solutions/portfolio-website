@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion"
+import { motion, AnimatePresence, useScroll, useSpring, useMotionValueEvent } from "framer-motion"
 import { color, space, font, layout } from "../../lib/theme"
 import { glassSurface } from "../../lib/glass"
+import { springSoft } from "../../lib/animations"
 
 export interface NavLink {
   label: string
@@ -95,9 +96,14 @@ export function Navbar({ brand, links }: NavbarProps) {
   const activeHref = useActiveSection(links)
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 300, damping: 40, mass: 0.4 })
+  const [scrollPercent, setScrollPercent] = React.useState(0)
+  useMotionValueEvent(scrollYProgress, "change", (v) => setScrollPercent(Math.round(v * 100)))
 
   return (
-    <header
+    <motion.header
+      initial={{ y: -16, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={springSoft}
       style={{
         position: "sticky",
         top: 0,
@@ -158,10 +164,23 @@ export function Navbar({ brand, links }: NavbarProps) {
           {brand}
         </a>
 
-        <nav className="nav-links" style={{ display: "flex", gap: space.lg }}>
+        <nav className="nav-links" style={{ display: "flex", alignItems: "center", gap: space.lg }}>
           {links.map((link) => (
             <NavLinkItem key={link.href} link={link} active={activeHref === link.href} />
           ))}
+          <span
+            style={{
+              fontFamily: font.mono,
+              fontSize: font.size.xs,
+              color: color.textFaint,
+              letterSpacing: 0.5,
+              paddingLeft: space.xs,
+              borderLeft: `1px solid ${color.border}`,
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {String(scrollPercent).padStart(2, "0")}%
+          </span>
         </nav>
 
         <button
@@ -241,6 +260,6 @@ export function Navbar({ brand, links }: NavbarProps) {
           </motion.nav>
         ) : null}
       </AnimatePresence>
-    </header>
+    </motion.header>
   )
 }

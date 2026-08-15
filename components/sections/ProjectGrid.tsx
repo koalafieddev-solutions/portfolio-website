@@ -43,7 +43,7 @@ export function ProjectGrid({ heading, subheading, projects, columns = 3, featur
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
+        viewport={{ once: true, amount: 0.15, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
         style={{
           display: "grid",
