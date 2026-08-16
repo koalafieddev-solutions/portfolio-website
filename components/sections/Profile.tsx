@@ -5,7 +5,9 @@ import { motion } from "framer-motion"
 import { color, space, font, radius, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
+import { use3DTilt } from "../../lib/use3DTilt"
 import { SectionHeading } from "../ui/SectionHeading"
+import { CornerBrackets } from "../ui/CornerBrackets"
 
 export interface ProfileItem {
   value: string
@@ -41,11 +43,13 @@ function CategoryItems({ category }: { category: ProfileCategory }) {
             key={item.value}
             style={{
               padding: `${space.xxs + 1}px ${space.sm}px`,
-              borderRadius: radius.pill,
               border: `1px solid ${color.border}`,
               color: color.textMuted,
+              fontFamily: font.mono,
               fontSize: font.size.xs,
               fontWeight: font.weight.medium,
+              letterSpacing: 0.4,
+              textTransform: "uppercase",
             }}
           >
             {item.value}
@@ -83,8 +87,7 @@ function CategoryItems({ category }: { category: ProfileCategory }) {
               flexShrink: 0,
               width: 4,
               height: 4,
-              borderRadius: "50%",
-              backgroundColor: color.accent,
+              backgroundColor: color.textMuted,
               marginTop: 7,
             }}
           />
@@ -92,6 +95,45 @@ function CategoryItems({ category }: { category: ProfileCategory }) {
         </div>
       ))}
     </div>
+  )
+}
+
+function CategoryCard({ category }: { category: ProfileCategory }) {
+  const tilt = use3DTilt(4)
+
+  return (
+    <motion.div
+      variants={fadeUp}
+      {...tilt.handlers}
+      style={{
+        position: "relative",
+        ...glassSurface(),
+        borderRadius: radius.sm,
+        padding: space.md,
+        transformPerspective: tilt.transformPerspective,
+        rotateX: tilt.rotateX,
+        rotateY: tilt.rotateY,
+      }}
+    >
+      <CornerBrackets corners={["tr"]} />
+
+      <h3
+        style={{
+          margin: 0,
+          marginBottom: space.sm,
+          color: color.accentCyan,
+          fontFamily: font.display,
+          fontSize: font.size.lg,
+          fontWeight: font.weight.semibold,
+          letterSpacing: font.tracking.heading,
+          textTransform: "uppercase",
+        }}
+      >
+        {category.title}
+      </h3>
+
+      <CategoryItems category={category} />
+    </motion.div>
   )
 }
 
@@ -105,7 +147,7 @@ export function Profile({ heading, subheading, identity, categories }: ProfilePr
         fontFamily: font.family,
       }}
     >
-      <SectionHeading heading={heading} subheading={subheading} index="01" />
+      <SectionHeading heading={heading} subheading={subheading} index="01" accent={color.accentCyan} />
 
       <motion.div
         initial="hidden"
@@ -141,33 +183,7 @@ export function Profile({ heading, subheading, identity, categories }: ProfilePr
           }}
         >
           {categories.map((category) => (
-            <motion.div
-              key={category.key}
-              variants={fadeUp}
-              className="glass-glow-border"
-              style={{
-                position: "relative",
-                ...glassSurface(),
-                borderRadius: radius.lg,
-                padding: space.md,
-              }}
-            >
-              <h3
-                style={{
-                  margin: 0,
-                  marginBottom: space.sm,
-                  color: color.text,
-                  fontFamily: font.display,
-                  fontSize: font.size.lg,
-                  fontWeight: font.weight.semibold,
-                  letterSpacing: -0.2,
-                }}
-              >
-                {category.title}
-              </h3>
-
-              <CategoryItems category={category} />
-            </motion.div>
+            <CategoryCard key={category.key} category={category} />
           ))}
         </div>
       </motion.div>

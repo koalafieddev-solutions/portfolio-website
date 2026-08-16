@@ -30,8 +30,8 @@ body {
   pointer-events: none;
   background-image: repeating-linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.025) 0px,
-    rgba(255, 255, 255, 0.025) 1px,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 1px,
     transparent 1px,
     transparent 3px
   );
@@ -54,7 +54,7 @@ img {
 }
 
 ::selection {
-  background: rgba(74, 151, 245, 0.32);
+  background: rgba(255, 255, 255, 0.18);
   color: #f2f3f5;
 }
 
@@ -67,27 +67,6 @@ img {
 
 .scroll-row-track::-webkit-scrollbar {
   display: none;
-}
-
-/* Slow, low-amplitude twinkle — a restrained nod to the aerospace theme, not a
-   decorative starfield. Amplitude and count are intentionally minimal. */
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.14;
-  }
-  50% {
-    opacity: 0.65;
-  }
-}
-
-.star-dot {
-  position: absolute;
-  border-radius: 50%;
-  background: #ffffff;
-  animation-name: twinkle;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
 }
 
 /* Single restrained pulse ring used for exactly one "currently active" state
@@ -107,52 +86,9 @@ img {
   animation: signal-ring 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-/* Large, near-static color fields — motion is barely perceptible, just
-   enough to keep the glass surfaces above them from feeling flat. */
-@keyframes drift-a {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(3%, 4%) scale(1.05);
-  }
-}
-
-@keyframes drift-b {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-4%, -3%) scale(1.06);
-  }
-}
-
-@keyframes drift-c {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(4%, -3%) scale(1.04);
-  }
-}
-
-.ambient-blob-accent {
-  animation: drift-a 46s ease-in-out infinite;
-}
-
-.ambient-blob-signal {
-  animation: drift-b 54s ease-in-out infinite;
-}
-
-.ambient-blob-violet {
-  animation: drift-c 60s ease-in-out infinite;
-}
-
-/* Very faint blueprint grid, slow single-axis drift — a whisper of the
-   engineering-schematic motif behind everything, not a tiled texture. */
+/* Very faint engineering-grid, slow single-axis drift — a whisper of a
+   schematic behind everything, not a tiled texture. Neutral gray, not
+   tinted, so it reads as instrument-panel rather than decoration. */
 @keyframes grid-drift {
   0% {
     background-position: 0 0;
@@ -170,129 +106,117 @@ img {
   inset: -100px;
   z-index: -1;
   pointer-events: none;
-  background-image: linear-gradient(rgba(74, 151, 245, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(74, 151, 245, 0.05) 1px, transparent 1px);
-  background-size: 120px 120px;
-  mask-image: radial-gradient(ellipse 80% 65% at 50% 0%, black 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 65% at 50% 0%, black 0%, transparent 75%);
-  animation: grid-drift 40s linear infinite;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 85% 70% at 50% 0%, black 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 70% at 50% 0%, black 0%, transparent 78%);
+  animation: grid-drift 46s linear infinite;
 }
 
-/* Concentric "radar" rings, heavily blurred into soft glowing bands — pure
-   texture and depth, never legible as rings up close. A second, unrelated
-   pattern from the grid so the field doesn't read as one flat layer. */
-.hud-radar-texture {
+/* A single soft, static highlight standing in for scene depth — restrained,
+   monochrome, never a colored glow. */
+.hud-vignette {
   position: fixed;
   inset: -15%;
   z-index: -2;
   pointer-events: none;
-  background-image: repeating-radial-gradient(
-    circle at 12% 18%,
-    rgba(74, 151, 245, 0.09) 0px,
-    rgba(74, 151, 245, 0.09) 1px,
-    transparent 1px,
-    transparent 72px
-  );
-  filter: blur(22px);
-  opacity: 0.7;
+  background: radial-gradient(ellipse 60% 45% at 82% 6%, rgba(255, 255, 255, 0.05), transparent 70%);
 }
 
-.hud-radar-texture-b {
+/* Micro dot-matrix — the nearest-to-background texture, felt more than
+   consciously seen (kept under 6% opacity). Its own independent cursor
+   parallax only, no scroll-drift, so it stays as the calmest layer. */
+.hud-dots {
   position: fixed;
-  inset: -15%;
-  z-index: -2;
+  inset: -40px;
+  z-index: -1;
   pointer-events: none;
-  background-image: repeating-radial-gradient(
-    circle at 88% 78%,
-    rgba(245, 169, 58, 0.07) 0px,
-    rgba(245, 169, 58, 0.07) 1px,
-    transparent 1px,
-    transparent 84px
-  );
-  filter: blur(26px);
-  opacity: 0.6;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
-/* Angular "cut corner" panel shape — the engineered-console silhouette used
-   on primary buttons and a few featured surfaces instead of a plain rounded
-   rect, so key elements read as instrument panels rather than web cards. */
-.chamfer {
-  clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
-}
-
-.chamfer-sm {
-  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
-}
-
-/* Static glass-edge highlight along a panel's own border — a soft diagonal
-   rim-light, brightest where light would naturally catch an actual pane of
-   glass (top-left), fading through faint accent tints, dim on the far
-   (bottom-right) edge. No motion — a rotating version of this read as busy
-   once several panels were on screen with it running at once. */
-.glass-glow-border {
-  position: relative;
-}
-
-.glass-glow-border::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(74, 151, 245, 0.16) 28%,
-    rgba(255, 255, 255, 0.05) 52%,
-    rgba(245, 169, 58, 0.12) 76%,
-    rgba(255, 255, 255, 0.28) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-/* Vibrant flowing gradient + a slow brightness breathe — reserved for the
-   one closing CTA headline, not reused as a generic text treatment. */
-@keyframes gradient-flow {
-  0%,
-  100% {
-    background-position: 0% 50%;
+/* Slow independent rotation for the background orbit rings — a dashed
+   stroke rather than solid, so the rotation actually reads as motion. */
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
   }
-  50% {
-    background-position: 100% 50%;
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@keyframes title-breathe {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.18);
-  }
+.hud-orbit {
+  animation: orbit-spin 160s linear infinite;
+  transform-origin: center;
 }
 
-.hero-cta-title {
-  display: inline-block;
-  background-image: linear-gradient(90deg, #f2b84d, #6ea8ff, #c084fc, #f2b84d);
-  background-size: 300% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-flow 7s ease-in-out infinite, title-breathe 4s ease-in-out infinite;
+.hud-orbit-slow {
+  animation-duration: 240s;
+  animation-direction: reverse;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .star-dot,
+  .hud-orbit {
+    animation: none;
+  }
+}
+
+/* Small L-shaped corner marks — the recurring "instrument panel" motif on
+   cards and featured surfaces, standing in for a plain rounded rect. */
+.corner-mark {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.corner-mark::before,
+.corner-mark::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+
+.corner-mark::before {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.corner-mark::after {
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 100%;
+}
+
+/* Set back from the literal corner point rather than sitting flush on it —
+   panels now round off with radius.sm (12px), and a mark pinned at -1px
+   would float in the gap beyond that curve instead of hugging the panel. */
+.corner-mark-tr {
+  top: 5px;
+  right: 5px;
+  transform: rotate(90deg);
+}
+
+.corner-mark-bl {
+  bottom: 5px;
+  left: 5px;
+  transform: rotate(-90deg);
+}
+
+.corner-mark-br {
+  bottom: 5px;
+  right: 5px;
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
   .signal-ring,
-  .ambient-blob-accent,
-  .ambient-blob-signal,
-  .ambient-blob-violet,
-  .hero-cta-title,
   .hud-grid {
     animation: none;
   }
@@ -345,6 +269,40 @@ img {
   }
 
   .stats-grid > div:last-child {
+    border-right: none;
+  }
+}
+
+/* Hero HUD readout row (SYS / LAT / NODE / UTC) — same divider convention
+   as .stats-grid, one row on desktop, wraps to 2x2 on narrow screens. */
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.status-strip > div {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.status-strip > div:nth-child(-n + 2) {
+  border-top: none;
+}
+
+.status-strip > div:nth-child(odd) {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (min-width: 480px) {
+  .status-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .status-strip > div {
+    border-top: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .status-strip > div:last-child {
     border-right: none;
   }
 }

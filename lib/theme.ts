@@ -2,30 +2,51 @@
  * Design tokens shared by every component. Import from here instead of
  * hardcoding colors, spacing, radii, fonts, or shadows.
  *
- * Palette: near-monochrome premium dark, one restrained signal accent
- * (steel blue) standing in for status/emphasis instead of decorative color.
+ * Palette: monochrome instrument-panel rendered in frosted glass — near-black
+ * background, translucent blurred surfaces, hairline borders with a faint
+ * cool glow. One restrained cyan-white sci-fi accent for status/glow,
+ * used sparingly rather than as decoration.
  */
 
 export const color = {
   background: "#08090B",
-  backgroundElevated: "#0D0F12",
-  surface: "#111318",
-  surfaceRaised: "#15171D",
-  border: "rgba(255, 255, 255, 0.08)",
-  borderStrong: "rgba(255, 255, 255, 0.16)",
+  backgroundElevated: "#0B0C0F",
+  surface: "#0E0F13",
+  surfaceRaised: "#131419",
+  border: "rgba(255, 255, 255, 0.09)",
+  borderStrong: "rgba(255, 255, 255, 0.18)",
   text: "#F2F3F5",
-  textMuted: "#9CA0AB",
-  textFaint: "#5A5E68",
-  accent: "#4A97F5",
-  accentHover: "#6FB0FF",
-  accentMuted: "rgba(74, 151, 245, 0.14)",
+  textMuted: "#9A9EA9",
+  textFaint: "#55585F",
+  accent: "#B9BFC9",
+  accentHover: "#F2F3F5",
+  accentMuted: "rgba(255, 255, 255, 0.06)",
   accentText: "#08090B",
-  signal: "#F5A93A",
-  signalHover: "#FFC24D",
-  signalMuted: "rgba(245, 169, 58, 0.16)",
-  glass: "rgba(19, 21, 27, 0.42)",
-  glassStrong: "rgba(22, 24, 31, 0.58)",
-  glassBorder: "rgba(255, 255, 255, 0.2)",
+  signal: "#9A9EA9",
+  signalHover: "#F2F3F5",
+  signalMuted: "rgba(255, 255, 255, 0.06)",
+  status: "#7CD98C",
+  glow: "#8FD8FF",
+  glowMuted: "rgba(143, 216, 255, 0.14)",
+  glass: "rgba(20, 24, 30, 0.46)",
+  glassStrong: "rgba(24, 28, 36, 0.6)",
+  glassBorder: "rgba(255, 255, 255, 0.14)",
+  // Low-saturation secondary accents — spectral light through frosted
+  // optical glass, never competing with the monochrome base. Used sparingly
+  // for information hierarchy (violet/mint/amber), not as decoration.
+  accentCyan: "#8FD8FF",
+  accentViolet: "#B9AEDD",
+  accentMint: "#8FDBC4",
+  accentAmber: "#D9B98A",
+} as const
+
+// Backdrop-blur + shadow strength per Z-depth plane. Farther-back layers
+// stay crisp with no blur; each plane above it blurs progressively less
+// than the one it sits on, so nesting order reads correctly at a glance.
+export const elevation = {
+  panel: 32,
+  nested: 18,
+  floating: 12,
 } as const
 
 export const space = {
@@ -38,10 +59,13 @@ export const space = {
   xxl: 96,
 } as const
 
+// Smooth, machined bevels rather than near-sharp corners — every panel,
+// card, and button reads from these three sizes so the whole site rounds
+// off consistently.
 export const radius = {
-  sm: 3,
-  md: 8,
-  lg: 14,
+  sm: 12,
+  md: 16,
+  lg: 20,
   pill: 999,
 } as const
 
@@ -54,10 +78,10 @@ export const font = {
   display: "var(--font-display), 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif",
   mono: "var(--font-mono), 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
   size: {
-    xs: 12,
-    sm: 14,
-    md: 16.5,
-    lg: 21,
+    xs: 11.5,
+    sm: 13.5,
+    md: 16,
+    lg: 20,
     xl: 32,
     xxl: 52,
   },
@@ -66,6 +90,10 @@ export const font = {
     medium: 500,
     semibold: 600,
     bold: 700,
+  },
+  tracking: {
+    label: 1.6,
+    heading: 0.5,
   },
 } as const
 
@@ -79,8 +107,8 @@ export const shadow = {
 export const gradient = {
   heroOverlay:
     "linear-gradient(180deg, rgba(8,9,11,0.25) 0%, rgba(8,9,11,0.85) 62%, rgba(8,9,11,1) 100%)",
-  accentGlow: "radial-gradient(circle at 25% 15%, rgba(74,151,245,0.16), transparent 55%)",
-  signalToAccent: "linear-gradient(90deg, #F5A93A, #4A97F5)",
+  accentGlow: "radial-gradient(circle at 75% 20%, rgba(255,255,255,0.06), transparent 55%)",
+  signalToAccent: "linear-gradient(90deg, #9A9EA9, #F2F3F5)",
 } as const
 
 export const ease = {

@@ -5,11 +5,13 @@ import { motion } from "framer-motion"
 import { color, space, font, radius, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
+import { CornerBrackets } from "../ui/CornerBrackets"
 import { StatTile } from "../ui/StatTile"
 
 export interface StatsBarItem {
   value: string
   label: string
+  accent?: string
 }
 
 export interface StatsBarProps {
@@ -34,13 +36,14 @@ export function StatsBar({ kicker, items }: StatsBarProps) {
         whileInView="visible"
         viewport={{ once: true, amount: 0.2, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
-        className="glass-glow-border"
         style={{
           position: "relative",
           ...glassSurface(true),
-          borderRadius: radius.lg,
+          borderRadius: radius.sm,
         }}
       >
+        <CornerBrackets corners={["tr", "bl"]} />
+
         <motion.div
           variants={fadeUp}
           style={{
@@ -50,24 +53,20 @@ export function StatsBar({ kicker, items }: StatsBarProps) {
             padding: `${space.sm}px ${space.md}px`,
             borderBottom: `1px solid ${color.border}`,
             color: color.textFaint,
+            fontFamily: font.mono,
             fontSize: font.size.xs,
-            fontWeight: font.weight.semibold,
-            letterSpacing: 1.2,
+            fontWeight: font.weight.medium,
+            letterSpacing: font.tracking.label,
             textTransform: "uppercase",
           }}
         >
-          <span style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: color.accent }} />
+          <span style={{ width: 5, height: 5, border: `1px solid ${color.textFaint}` }} />
           {kicker}
         </motion.div>
 
         <motion.div variants={fadeUp} className="stats-grid">
-          {items.map((stat, index) => (
-            <StatTile
-              key={stat.label}
-              value={stat.value}
-              label={stat.label}
-              accent={index % 2 === 0 ? "blue" : "amber"}
-            />
+          {items.map((stat) => (
+            <StatTile key={stat.label} value={stat.value} label={stat.label} accent={stat.accent} />
           ))}
         </motion.div>
       </motion.div>

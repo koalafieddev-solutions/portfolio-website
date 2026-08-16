@@ -6,6 +6,7 @@ import { color, space, font, radius, shadow } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
 import { SectionHeading } from "../ui/SectionHeading"
+import { CornerBrackets } from "../ui/CornerBrackets"
 
 export interface TimelineAsset {
   title: string
@@ -61,8 +62,8 @@ function NodeFlash({ progress, passT }: { progress: ReturnType<typeof useMotionV
         position: "absolute",
         inset: -4,
         borderRadius: "50%",
-        backgroundColor: "#EAF4FF",
-        boxShadow: "0 0 10px 3px rgba(190, 220, 255, 0.9), 0 0 20px 8px rgba(74, 151, 245, 0.7)",
+        backgroundColor: color.accentViolet,
+        boxShadow: `0 0 10px 3px ${color.accentViolet}CC, 0 0 20px 8px ${color.accentViolet}66`,
         pointerEvents: "none",
         opacity,
       }}
@@ -127,7 +128,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
         fontFamily: font.family,
       }}
     >
-      <SectionHeading heading={heading} subheading={subheading} index="02" />
+      <SectionHeading heading={heading} subheading={subheading} index="02" accent={color.accentViolet} />
 
       <motion.div
         initial="hidden"
@@ -151,7 +152,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
             style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(180deg, rgba(74, 151, 245, 0.55), rgba(245, 169, 58, 0.4))",
+              background: `linear-gradient(180deg, ${color.borderStrong}, ${color.border})`,
             }}
           />
           <motion.span
@@ -164,15 +165,15 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
               height: 5,
               marginLeft: -2,
               borderRadius: "50%",
-              backgroundColor: color.accentHover,
-              boxShadow: "0 0 10px 2px rgba(74, 151, 245, 0.8)",
+              backgroundColor: color.accentViolet,
+              boxShadow: `0 0 10px 2px ${color.accentViolet}80`,
             }}
           />
         </div>
 
         {entries.map((entry, index) => {
-          const dotColor = entry.live ? color.accent : entry.highlight ? color.signal : undefined
-          const haloRgb = entry.live ? "74, 151, 245" : entry.highlight ? "245, 169, 58" : "255, 255, 255"
+          const dotColor = entry.live || entry.highlight ? color.accentViolet : undefined
+          const haloRgb = "185, 174, 221"
           const haloStrength = entry.live || entry.highlight ? 1 : 0.4
           const fallbackT = entries.length > 1 ? index / (entries.length - 1) : 0
           const passT = nodeFractions[index] ?? fallbackT
@@ -218,7 +219,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                         position: "absolute",
                         inset: -2,
                         borderRadius: "50%",
-                        border: `1px solid ${color.accent}`,
+                        border: `1px solid ${color.accentViolet}`,
                       }}
                     />
                     <span
@@ -226,7 +227,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                         position: "absolute",
                         inset: 3,
                         borderRadius: "50%",
-                        backgroundColor: color.accent,
+                        backgroundColor: color.accentViolet,
                       }}
                     />
                   </>
@@ -244,13 +245,13 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                 position: "relative",
                 flex: "1 1 auto",
                 ...glassSurface(),
-                ...(entry.highlight
-                  ? { borderColor: entry.live ? "rgba(74, 151, 245, 0.36)" : "rgba(245, 169, 58, 0.36)" }
-                  : {}),
-                borderRadius: radius.md,
+                ...(entry.highlight ? { borderColor: color.borderStrong } : {}),
+                borderRadius: radius.sm,
                 padding: space.md,
               }}
             >
+              {entry.highlight ? <CornerBrackets corners={["tr"]} /> : null}
+
               <div
                 style={{
                   display: "flex",
@@ -272,7 +273,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                 <span
                   style={{
                     fontFamily: font.mono,
-                    color: entry.live ? color.accentHover : entry.highlight ? color.signalHover : color.accentHover,
+                    color: color.accentViolet,
                     fontSize: font.size.sm,
                     fontWeight: font.weight.semibold,
                   }}
@@ -282,10 +283,11 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                 {entry.tag ? (
                   <span
                     style={{
+                      fontFamily: font.mono,
                       color: color.textFaint,
                       fontSize: font.size.xs,
                       fontWeight: font.weight.semibold,
-                      letterSpacing: 0.5,
+                      letterSpacing: font.tracking.label,
                       textTransform: "uppercase",
                     }}
                   >
@@ -302,7 +304,8 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                   color: color.text,
                   fontSize: font.size.lg,
                   fontWeight: font.weight.semibold,
-                  letterSpacing: -0.2,
+                  letterSpacing: font.tracking.heading,
+                  textTransform: "uppercase",
                 }}
               >
                 {entry.title}

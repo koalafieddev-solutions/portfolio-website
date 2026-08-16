@@ -64,9 +64,12 @@ export const hoverLift = {
     boxShadow:
       "inset 0 1px 0 rgba(255, 255, 255, 0.09), inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 14px 36px rgba(0, 0, 0, 0.38), 0 3px 10px rgba(0, 0, 0, 0.26)",
   },
+  // Whole card grows as one unit — matched to (not dwarfed by) the inner
+  // image's own hover scale, so the panel visibly expands rather than
+  // reading as a static frame around a zooming picture.
   hover: {
-    y: -6,
-    scale: 1.012,
+    y: -8,
+    scale: 1.035,
     boxShadow:
       "inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 30px 68px rgba(0, 0, 0, 0.5), 0 8px 22px rgba(0, 0, 0, 0.32)",
     transition: springSnappy,

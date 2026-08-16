@@ -9,6 +9,8 @@ import { Profile, ProfileCategory } from "../components/sections/Profile"
 import { ContactButton } from "../components/ui/ContactButton"
 import { SectionHeading } from "../components/ui/SectionHeading"
 import { AmbientBackground } from "../components/ui/AmbientBackground"
+import { Button } from "../components/ui/Button"
+import { CornerBrackets } from "../components/ui/CornerBrackets"
 import { color, space, font, radius, layout } from "../lib/theme"
 import { glassSurface } from "../lib/glass"
 import products from "../content/products.json"
@@ -18,10 +20,10 @@ import education from "../content/education.json"
 import profile from "../content/profile.json"
 
 const stats = [
-  { value: "5", label: "Commercial Unreal Engine Assets" },
-  { value: "255,641", label: "Units Shipped" },
-  { value: "26", label: "Tutorials & Devlogs Published" },
-  { value: "10+", label: "Years of Unreal Engine Experience" },
+  { value: "5", label: "Commercial Unreal Engine Assets", accent: color.accentCyan },
+  { value: "255,641", label: "Units Shipped", accent: color.accentMint },
+  { value: "26", label: "Tutorials & Devlogs Published", accent: color.accentViolet },
+  { value: "10+", label: "Years of Unreal Engine Experience", accent: color.accentAmber },
 ]
 
 const navLinks = [
@@ -37,7 +39,12 @@ const tutorialVideos = videos.filter((v) => v.tag === "Tutorial")
 const setupGuideVideos = videos.filter((v) => v.tag === "Setup Guide")
 const otherVideos = videos.filter((v) => v.tag !== "Tutorial" && v.tag !== "Setup Guide")
 
-const offerings = ["Contract Work", "Marketplace Assets", "Custom Solutions", "Tooling & Pipelines"]
+const offerings = [
+  { label: "Contract Work", accent: color.accentCyan },
+  { label: "Marketplace Assets", accent: color.accentMint },
+  { label: "Custom Solutions", accent: color.accentViolet },
+  { label: "Tooling & Pipelines", accent: color.accentAmber },
+]
 
 const contactEmail = "koalafieddev@gmail.com"
 const contactDiscord = "scqdevelopers"
@@ -46,13 +53,31 @@ export default function Home() {
   return (
     <main style={{ minHeight: "100vh" }}>
       <AmbientBackground />
-      <Navbar brand="Koalafied Dev" links={navLinks} />
+      <Navbar brand="Koalafied Dev" links={navLinks} ctaLabel="Contact" ctaHref="#contact" />
 
       <Hero
         eyebrow="Unreal Engine Developer · Aerospace Engineer · Koalafied Dev"
-        headline="Hi, I'm Simon Cura — I build systems that have to work."
+        headline={
+          <>
+            Hi, I&rsquo;m Simon Cura — I build{" "}
+            <span
+              style={{
+                backgroundImage: `linear-gradient(90deg, ${color.accentCyan}, ${color.accentMint})`,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              systems that have to work
+            </span>
+            .
+          </>
+        }
         subhead="I've just earned my B.S. in Aerospace Engineering (Astronautics Option) from Embry-Riddle Aeronautical University — and I'm now going full-time into Unreal Engine development. 10+ years building in the engine, five commercial marketplace assets shipped, one of which Epic featured for free and put in front of 255,000+ developers. Same instinct carries over: design the system, model every edge case, ship something that holds up."
-      />
+      >
+        <Button label="View My Work" href="#products" variant="primary" />
+        <Button label="Get In Touch" href="#contact" variant="secondary" />
+      </Hero>
 
       <StatsBar kicker="By the Numbers" items={stats} />
 
@@ -97,57 +122,66 @@ export default function Home() {
           fontFamily: font.family,
         }}
       >
-        <SectionHeading heading="Currently" subheading="A snapshot of where my time is going right now." index="04" />
+        <SectionHeading
+          heading="Currently"
+          subheading="A snapshot of where my time is going right now."
+          index="04"
+          accent={color.accentAmber}
+        />
 
         <div
           style={{
+            position: "relative",
             display: "flex",
-            flexWrap: "wrap",
+            flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
-            gap: space.lg,
+            textAlign: "center",
+            gap: space.sm,
+            maxWidth: 640,
+            margin: "0 auto",
             ...glassSurface(),
-            borderRadius: radius.lg,
-            padding: space.lg,
+            borderRadius: radius.sm,
+            padding: `${space.xl}px ${space.lg}px`,
           }}
         >
-          <div style={{ flex: "0 0 auto", minWidth: 160, textAlign: "center" }}>
-            <div
-              style={{
-                fontFamily: font.mono,
-                color: color.signalHover,
-                fontSize: font.size.xxl,
-                fontWeight: font.weight.semibold,
-              }}
-            >
-              3
-            </div>
-            <div
-              style={{
-                color: color.textFaint,
-                fontSize: font.size.xs,
-                fontWeight: font.weight.medium,
-                textTransform: "uppercase",
-                letterSpacing: 0.6,
-                marginTop: space.xxs,
-              }}
-            >
-              Active Engagements
-            </div>
+          <CornerBrackets corners={["tr", "bl"]} />
+
+          <div
+            style={{
+              fontFamily: font.mono,
+              color: color.accentAmber,
+              fontSize: font.size.xxl,
+              fontWeight: font.weight.semibold,
+              lineHeight: 1,
+            }}
+          >
+            3
+          </div>
+          <div
+            style={{
+              color: color.textFaint,
+              fontFamily: font.mono,
+              fontSize: font.size.xs,
+              fontWeight: font.weight.medium,
+              textTransform: "uppercase",
+              letterSpacing: font.tracking.label,
+              marginBottom: space.sm,
+            }}
+          >
+            Active Engagements
           </div>
 
           <div
             style={{
-              flex: "1 1 320px",
               color: color.textMuted,
               fontSize: font.size.md,
               lineHeight: 1.6,
             }}
           >
-            I'm currently balancing <strong style={{ color: color.text }}>3 active client engagements</strong>{" "}
+            I'm currently balancing <strong style={{ color: color.accentAmber }}>3 active client engagements</strong>{" "}
             spanning Unreal Engine contract development and ongoing marketplace asset support, alongside
             continued work on new commercial assets and tutorials.{" "}
-            <a href="#contact" style={{ color: color.accentHover, fontWeight: font.weight.semibold }}>
+            <a href="#contact" style={{ color: color.accentCyan, fontWeight: font.weight.semibold }}>
               Get in touch
             </a>{" "}
             if you'd like to talk about availability for new work.
@@ -172,14 +206,14 @@ export default function Home() {
           subheading="Character systems, combat, environment art, and UE5 fundamentals — scroll for more."
           items={tutorialVideos}
           sectionIndex="06"
+          accent={color.accentViolet}
         />
-        <ScrollRow heading="Setup Guides" items={setupGuideVideos} />
-        <ScrollRow heading="Teasers, Devlogs & Demos" items={otherVideos} />
+        <ScrollRow heading="Setup Guides" items={setupGuideVideos} accent={color.accentAmber} />
+        <ScrollRow heading="Teasers, Devlogs & Demos" items={otherVideos} accent={color.accentMint} />
       </div>
 
       <section
         id="contact"
-        className="glass-glow-border"
         style={{
           position: "relative",
           maxWidth: layout.maxWidth,
@@ -187,10 +221,12 @@ export default function Home() {
           padding: `clamp(40px, 10vw, ${space.xxl}px) clamp(20px, 6vw, ${space.lg}px)`,
           textAlign: "center",
           ...glassSurface(true),
-          borderRadius: radius.lg,
+          borderRadius: radius.sm,
           fontFamily: font.family,
         }}
       >
+        <CornerBrackets corners={["tr", "bl", "br"]} />
+
         <div
           style={{
             display: "inline-flex",
@@ -202,9 +238,9 @@ export default function Home() {
           <span
             style={{
               fontFamily: font.mono,
-              color: color.textFaint,
+              color: color.accentMint,
               fontSize: font.size.xs,
-              letterSpacing: 1,
+              letterSpacing: font.tracking.label,
             }}
           >
             07
@@ -213,17 +249,18 @@ export default function Home() {
         </div>
 
         <h2
-          className="hero-cta-title"
           style={{
             margin: 0,
             marginBottom: space.xs,
             fontFamily: font.display,
+            color: color.text,
             fontSize: font.size.xl,
             fontWeight: font.weight.semibold,
-            letterSpacing: -0.5,
+            letterSpacing: font.tracking.heading,
+            textTransform: "uppercase",
           }}
         >
-          Let's build something.
+          Let&rsquo;s build something.
         </h2>
         <p
           style={{
@@ -247,25 +284,36 @@ export default function Home() {
             marginBottom: space.lg,
           }}
         >
-          {offerings.map((offering, index) => {
-            const accentColor = index % 2 === 0 ? color.accent : color.signal
-            return (
+          {offerings.map((offering) => (
+            <span
+              key={offering.label}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: space.xxs,
+                padding: `${space.xxs + 1}px ${space.sm}px`,
+                border: `1px solid ${offering.accent}4D`,
+                color: offering.accent,
+                fontFamily: font.mono,
+                fontSize: font.size.xs,
+                fontWeight: font.weight.medium,
+                letterSpacing: 0.4,
+                textTransform: "uppercase",
+              }}
+            >
               <span
-                key={offering}
                 style={{
-                  padding: `${space.xxs + 1}px ${space.sm}px`,
-                  borderRadius: radius.pill,
-                  border: `1px solid ${accentColor}33`,
-                  backgroundColor: `${accentColor}14`,
-                  color: color.textMuted,
-                  fontSize: font.size.xs,
-                  fontWeight: font.weight.medium,
+                  width: 5,
+                  height: 5,
+                  borderRadius: "50%",
+                  backgroundColor: offering.accent,
+                  boxShadow: `0 0 6px 1px ${offering.accent}80`,
+                  flexShrink: 0,
                 }}
-              >
-                {offering}
-              </span>
-            )
-          })}
+              />
+              {offering.label}
+            </span>
+          ))}
         </div>
         <ContactButton email={contactEmail} discord={contactDiscord} />
       </section>
@@ -295,8 +343,7 @@ export default function Home() {
             style={{
               width: 6,
               height: 6,
-              borderRadius: "50%",
-              background: `linear-gradient(135deg, ${color.accent}, ${color.signal})`,
+              border: `1px solid ${color.textFaint}`,
               flexShrink: 0,
             }}
           />

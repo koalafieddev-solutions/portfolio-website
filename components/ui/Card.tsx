@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { motion, useMotionValue, useSpring } from "framer-motion"
+import { motion } from "framer-motion"
 import { color, radius, space, font } from "../../lib/theme"
 import { hoverLift, springSnappy } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
+import { use3DTilt } from "../../lib/use3DTilt"
+import { CornerBrackets } from "./CornerBrackets"
 
 export interface CardImage {
   src: string
@@ -25,29 +27,21 @@ export interface CardProps {
   featured?: boolean
   meta?: CardMeta[]
   highlight?: boolean
+  index?: string
 }
 
-export function Card({ title, description, image, tag, href, featured = false, meta, highlight = false }: CardProps) {
-  // Pointer-driven tilt — a physical sense of depth on interaction, layered
-  // on top of the existing lift/scale variant rather than replacing it.
-  const rotateX = useMotionValue(0)
-  const rotateY = useMotionValue(0)
-  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 28, mass: 0.6 })
-  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 28, mass: 0.6 })
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== "mouse") return
-    const rect = event.currentTarget.getBoundingClientRect()
-    const px = (event.clientX - rect.left) / rect.width - 0.5
-    const py = (event.clientY - rect.top) / rect.height - 0.5
-    rotateY.set(px * 5)
-    rotateX.set(-py * 5)
-  }
-
-  const handlePointerLeave = () => {
-    rotateX.set(0)
-    rotateY.set(0)
-  }
+export function Card({
+  title,
+  description,
+  image,
+  tag,
+  href,
+  featured = false,
+  meta,
+  highlight = false,
+  index,
+}: CardProps) {
+  const tilt = use3DTilt()
 
   const content = (
     <motion.div
@@ -55,16 +49,15 @@ export function Card({ title, description, image, tag, href, featured = false, m
       whileHover="hover"
       animate="rest"
       variants={hoverLift}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
+      {...tilt.handlers}
       style={{
         position: "relative",
         display: "flex",
         flexDirection: featured ? "row" : "column",
         flexWrap: featured ? "wrap" : "nowrap",
         ...glassSurface(),
-        borderColor: highlight ? "rgba(245, 169, 58, 0.36)" : color.glassBorder,
-        borderRadius: radius.lg,
+        borderColor: highlight ? color.borderStrong : color.glassBorder,
+        borderRadius: radius.sm,
         // No overflow:hidden here — it would also clip this element's own
         // box-shadow (a well-known CSS gotcha), silently killing the depth
         // shadow from glassSurface()/hoverLift. The image wrapper below
@@ -73,11 +66,13 @@ export function Card({ title, description, image, tag, href, featured = false, m
         fontFamily: font.family,
         cursor: href ? "pointer" : "default",
         height: "100%",
-        transformPerspective: 900,
-        rotateX: springRotateX,
-        rotateY: springRotateY,
+        transformPerspective: tilt.transformPerspective,
+        rotateX: tilt.rotateX,
+        rotateY: tilt.rotateY,
       }}
     >
+      <CornerBrackets corners={["tr"]} />
+
       {image?.src ? (
         <div
           style={{
@@ -88,12 +83,19 @@ export function Card({ title, description, image, tag, href, featured = false, m
             minHeight: featured ? 260 : undefined,
             alignSelf: featured ? "stretch" : undefined,
             overflow: "hidden",
-            borderRadius: radius.lg,
+            // Only the corners that actually sit on the card's own outer
+            // edge get rounded to match it — rounding every corner would
+            // carve a visible notch where the image meets the text block
+            // below/beside it, since that div keeps square corners.
+            borderRadius: featured ? `${radius.sm}px 0 0 ${radius.sm}px` : `${radius.sm}px ${radius.sm}px 0 0`,
           }}
         >
-          <motion.div
-            variants={{ rest: { scale: 1 }, hover: { scale: 1.045 } }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          {/* No independent hover-scale here — the whole card (via hoverLift
+              on the outer motion.div) already scales up as one unit, and
+              this image is a child of that, so it grows right along with
+              it. A second scale on top of that compounded into the image
+              visibly zooming faster than the rest of the card. */}
+          <div
             style={{
               position: "absolute",
               inset: 0,
@@ -106,20 +108,17 @@ export function Card({ title, description, image, tag, href, featured = false, m
           />
           {highlight ? (
             <span
-              className="chamfer-sm"
               style={{
                 position: "absolute",
                 top: space.sm,
                 left: space.sm,
                 padding: `3px ${space.xs}px`,
-                backgroundColor: "rgba(245, 169, 58, 0.18)",
-                backdropFilter: "blur(6px)",
-                WebkitBackdropFilter: "blur(6px)",
-                border: "1px solid rgba(245, 169, 58, 0.45)",
-                color: color.signalHover,
+                backgroundColor: "rgba(8, 9, 11, 0.78)",
+                border: `1px solid ${color.borderStrong}`,
+                color: color.text,
                 fontFamily: font.mono,
                 fontSize: font.size.xs,
-                letterSpacing: 0.5,
+                letterSpacing: font.tracking.label,
                 textTransform: "uppercase",
               }}
             >
@@ -139,18 +138,36 @@ export function Card({ title, description, image, tag, href, featured = false, m
           justifyContent: featured ? "center" : undefined,
         }}
       >
-        {tag ? (
-          <span
-            style={{
-              color: color.textFaint,
-              fontSize: font.size.xs,
-              fontWeight: font.weight.semibold,
-              letterSpacing: 0.6,
-              textTransform: "uppercase",
-            }}
-          >
-            {tag}
-          </span>
+        {tag || index ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: space.xs }}>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: space.xs,
+                fontFamily: font.mono,
+                color: color.textFaint,
+                fontSize: font.size.xs,
+                fontWeight: font.weight.semibold,
+                letterSpacing: font.tracking.label,
+                textTransform: "uppercase",
+              }}
+            >
+              {index ? <span style={{ color: color.accentCyan }}>{index}</span> : null}
+              {index && tag ? <span aria-hidden="true">/</span> : null}
+              {tag}
+            </span>
+            <span
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                flexShrink: 0,
+                backgroundColor: color.textFaint,
+              }}
+              aria-hidden="true"
+            />
+          </div>
         ) : null}
 
         <h3
@@ -160,7 +177,8 @@ export function Card({ title, description, image, tag, href, featured = false, m
             color: color.text,
             fontSize: featured ? font.size.xl : font.size.lg,
             fontWeight: font.weight.semibold,
-            letterSpacing: -0.3,
+            letterSpacing: font.tracking.heading,
+            textTransform: "uppercase",
           }}
         >
           {title}
@@ -192,7 +210,7 @@ export function Card({ title, description, image, tag, href, featured = false, m
                 <div
                   style={{
                     fontFamily: font.mono,
-                    color: color.accentHover,
+                    color: color.text,
                     fontSize: featured ? font.size.lg : font.size.md,
                     fontWeight: font.weight.bold,
                     lineHeight: 1.2,
@@ -205,7 +223,7 @@ export function Card({ title, description, image, tag, href, featured = false, m
                     color: color.textFaint,
                     fontSize: font.size.xs,
                     textTransform: "uppercase",
-                    letterSpacing: 0.5,
+                    letterSpacing: font.tracking.label,
                   }}
                 >
                   {item.label}
@@ -226,9 +244,11 @@ export function Card({ title, description, image, tag, href, featured = false, m
               alignItems: "center",
               gap: 4,
               color: color.text,
+              fontFamily: font.mono,
               fontSize: font.size.xs,
               fontWeight: font.weight.semibold,
-              letterSpacing: 0.3,
+              letterSpacing: font.tracking.label,
+              textTransform: "uppercase",
             }}
           >
             View <span aria-hidden="true">→</span>

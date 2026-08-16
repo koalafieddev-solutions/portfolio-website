@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion, AnimatePresence, useScroll, useSpring, useMotionValue, useMotionValueEvent, PanInfo } from "framer-motion"
-import { color, space, font, radius, layout, gradient } from "../../lib/theme"
+import { color, space, font, radius, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp, springSnappy } from "../../lib/animations"
 import { Card, CardImage, CardMeta } from "../ui/Card"
 import { SectionHeading } from "../ui/SectionHeading"
@@ -22,11 +22,12 @@ export interface ScrollRowProps {
   subheading?: string
   items: ScrollRowItem[]
   sectionIndex?: string
+  accent?: string
 }
 
 const THUMB_SIZE = 16
 
-export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRowProps) {
+export function ScrollRow({ heading, subheading, items, sectionIndex, accent = color.accentCyan }: ScrollRowProps) {
   const trackRef = React.useRef<HTMLDivElement>(null)
   const barRef = React.useRef<HTMLDivElement>(null)
   const isDraggingRef = React.useRef(false)
@@ -73,7 +74,7 @@ export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRo
         fontFamily: font.family,
       }}
     >
-      <SectionHeading heading={heading} subheading={subheading} index={sectionIndex} />
+      <SectionHeading heading={heading} subheading={subheading} index={sectionIndex} accent={accent} />
 
       <motion.div
         ref={trackRef}
@@ -139,7 +140,7 @@ export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRo
               transformOrigin: "0%",
               height: "100%",
               borderRadius: radius.pill,
-              background: gradient.signalToAccent,
+              background: `linear-gradient(90deg, ${color.textFaint}, ${accent})`,
             }}
           />
 
@@ -195,7 +196,7 @@ export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRo
                     width: 8,
                     height: 8,
                     borderRadius: "50%",
-                    border: `1px solid ${color.accent}`,
+                    border: `1px solid ${accent}`,
                   }}
                 />
               ) : null}
@@ -205,7 +206,7 @@ export function ScrollRow({ heading, subheading, items, sectionIndex }: ScrollRo
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                backgroundColor: color.text,
+                backgroundColor: accent,
                 boxShadow: `0 0 0 3px ${color.accentMuted}`,
               }}
             />

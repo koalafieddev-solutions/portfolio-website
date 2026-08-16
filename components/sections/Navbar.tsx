@@ -2,9 +2,19 @@
 
 import * as React from "react"
 import { motion, AnimatePresence, useScroll, useSpring, useMotionValueEvent } from "framer-motion"
-import { color, space, font, layout } from "../../lib/theme"
-import { glassSurface } from "../../lib/glass"
+import { color, space, font, layout, radius } from "../../lib/theme"
 import { springSoft } from "../../lib/animations"
+import { glassSurface } from "../../lib/glass"
+
+// These panels only ever want a single edge, but glassSurface()'s border is
+// longhand across all four sides — mixing that with a per-side override
+// (borderBottom etc.) on the same framer-motion element trips its
+// "conflicting style property" warning. Dropping the base border keys
+// entirely and setting just the one edge avoids the overlap outright.
+function glassSurfaceSingleEdge(edge: "borderBottom" | "borderTop") {
+  const { borderWidth, borderStyle, borderColor, ...rest } = glassSurface()
+  return { ...rest, [edge]: `1px solid ${color.glassBorder}` }
+}
 
 export interface NavLink {
   label: string
@@ -14,6 +24,8 @@ export interface NavLink {
 export interface NavbarProps {
   brand: string
   links: NavLink[]
+  ctaLabel?: string
+  ctaHref?: string
 }
 
 function useActiveSection(links: NavLink[]) {
@@ -42,6 +54,10 @@ function useActiveSection(links: NavLink[]) {
   return activeHref
 }
 
+// Boxed tab indicator — a bordered pill that slides between links via a
+// shared layoutId, echoing the console's segmented tab bar (a filled box
+// around the active tab, plain text everywhere else) rather than an
+// underline.
 function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
   return (
     <a
@@ -49,14 +65,15 @@ function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
       style={{
         position: "relative",
         display: "inline-flex",
-        flexDirection: "column",
-        gap: 6,
-        color: active ? color.text : color.textMuted,
-        fontFamily: font.family,
-        fontSize: font.size.sm,
+        alignItems: "center",
+        color: active ? color.accentCyan : color.textMuted,
+        fontFamily: font.mono,
+        fontSize: font.size.xs,
         fontWeight: font.weight.medium,
+        textTransform: "uppercase",
+        letterSpacing: font.tracking.label,
         textDecoration: "none",
-        padding: `${space.xxs}px 2px`,
+        padding: `6px ${space.sm}px`,
         transition: "color 0.18s ease-out",
       }}
       onMouseEnter={(e) => {
@@ -66,32 +83,27 @@ function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
         if (!active) e.currentTarget.style.color = color.textMuted
       }}
     >
-      {link.label}
-      <span style={{ position: "relative", height: 1, width: "100%" }}>
-        <span
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundColor: color.border,
-          }}
-        />
+      {active ? (
         <motion.span
-          initial={false}
-          animate={{ scaleX: active ? 1 : 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 32 }}
+          layoutId="nav-active-tab"
+          transition={{ type: "spring", stiffness: 380, damping: 32 }}
           style={{
             position: "absolute",
             inset: 0,
-            backgroundColor: color.accent,
-            transformOrigin: "0%",
+            border: `1px solid ${color.accentCyan}66`,
+            borderRadius: radius.sm,
+            backgroundColor: color.glassStrong,
+            boxShadow: `0 0 16px -4px ${color.accentCyan}4D`,
+            zIndex: -1,
           }}
         />
-      </span>
+      ) : null}
+      {link.label}
     </a>
   )
 }
 
-export function Navbar({ brand, links }: NavbarProps) {
+export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
   const [menuOpen, setMenuOpen] = React.useState(false)
   const activeHref = useActiveSection(links)
   const { scrollYProgress } = useScroll()
@@ -108,10 +120,7 @@ export function Navbar({ brand, links }: NavbarProps) {
         position: "sticky",
         top: 0,
         zIndex: 20,
-        ...glassSurface(),
-        borderLeft: "none",
-        borderRight: "none",
-        borderTop: "none",
+        ...glassSurfaceSingleEdge("borderBottom"),
         fontFamily: font.family,
       }}
     >
@@ -124,7 +133,8 @@ export function Navbar({ brand, links }: NavbarProps) {
           left: 0,
           right: 0,
           height: 1,
-          backgroundColor: color.accent,
+          backgroundColor: color.accentCyan,
+          boxShadow: `0 0 8px ${color.accentCyan}80`,
         }}
       />
 
@@ -145,22 +155,28 @@ export function Navbar({ brand, links }: NavbarProps) {
             alignItems: "center",
             gap: space.xs,
             color: color.text,
-            fontFamily: font.display,
-            fontSize: font.size.md,
+            fontFamily: font.mono,
+            fontSize: font.size.sm,
             fontWeight: font.weight.semibold,
-            letterSpacing: -0.2,
+            letterSpacing: font.tracking.label,
+            textTransform: "uppercase",
             textDecoration: "none",
           }}
         >
           <span
             style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: `linear-gradient(135deg, ${color.accent}, ${color.signal})`,
+              position: "relative",
+              width: 18,
+              height: 18,
               flexShrink: 0,
+              border: `1px solid ${color.text}`,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
+          >
+            <span style={{ width: 5, height: 5, backgroundColor: color.accentCyan, borderRadius: "50%" }} />
+          </span>
           {brand}
         </a>
 
@@ -181,6 +197,35 @@ export function Navbar({ brand, links }: NavbarProps) {
           >
             {String(scrollPercent).padStart(2, "0")}%
           </span>
+          {ctaLabel && ctaHref ? (
+            <a
+              href={ctaHref}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                padding: `6px ${space.sm}px`,
+                border: `1px solid ${color.borderStrong}`,
+                color: color.text,
+                fontFamily: font.mono,
+                fontSize: font.size.xs,
+                fontWeight: font.weight.semibold,
+                textTransform: "uppercase",
+                letterSpacing: font.tracking.label,
+                textDecoration: "none",
+                transition: "border-color 0.18s ease-out, background-color 0.18s ease-out",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = color.text
+                e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.04)"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = color.borderStrong
+                e.currentTarget.style.backgroundColor = "transparent"
+              }}
+            >
+              {ctaLabel}
+            </a>
+          ) : null}
         </nav>
 
         <button
@@ -197,7 +242,7 @@ export function Navbar({ brand, links }: NavbarProps) {
             height: 36,
             background: "transparent",
             border: `1px solid ${color.border}`,
-            borderRadius: 4,
+            borderRadius: radius.sm,
             cursor: "pointer",
             padding: 0,
           }}
@@ -229,7 +274,7 @@ export function Navbar({ brand, links }: NavbarProps) {
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             style={{
               overflow: "hidden",
-              borderTop: `1px solid ${color.border}`,
+              ...glassSurfaceSingleEdge("borderTop"),
             }}
           >
             <div
@@ -247,8 +292,11 @@ export function Navbar({ brand, links }: NavbarProps) {
                   onClick={() => setMenuOpen(false)}
                   style={{
                     color: activeHref === link.href ? color.text : color.textMuted,
-                    fontSize: font.size.md,
+                    fontFamily: font.mono,
+                    fontSize: font.size.sm,
                     fontWeight: font.weight.medium,
+                    textTransform: "uppercase",
+                    letterSpacing: font.tracking.label,
                     textDecoration: "none",
                     padding: `${space.xs}px 0`,
                   }}
@@ -256,6 +304,28 @@ export function Navbar({ brand, links }: NavbarProps) {
                   {link.label}
                 </a>
               ))}
+              {ctaLabel && ctaHref ? (
+                <a
+                  href={ctaHref}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    marginTop: space.xxs,
+                    display: "inline-flex",
+                    justifyContent: "center",
+                    padding: `${space.xs}px 0`,
+                    border: `1px solid ${color.borderStrong}`,
+                    color: color.text,
+                    fontFamily: font.mono,
+                    fontSize: font.size.sm,
+                    fontWeight: font.weight.semibold,
+                    textTransform: "uppercase",
+                    letterSpacing: font.tracking.label,
+                    textDecoration: "none",
+                  }}
+                >
+                  {ctaLabel}
+                </a>
+              ) : null}
             </div>
           </motion.nav>
         ) : null}

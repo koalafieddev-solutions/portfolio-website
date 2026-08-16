@@ -5,9 +5,10 @@ export interface SectionHeadingProps {
   heading: string
   subheading?: string
   index?: string
+  accent?: string
 }
 
-export function SectionHeading({ heading, subheading, index }: SectionHeadingProps) {
+export function SectionHeading({ heading, subheading, index, accent = color.accentCyan }: SectionHeadingProps) {
   return (
     <div style={{ marginBottom: space.xl, textAlign: "center" }}>
       <div
@@ -15,16 +16,27 @@ export function SectionHeading({ heading, subheading, index }: SectionHeadingPro
           display: "inline-flex",
           alignItems: "center",
           gap: space.xs,
-          marginBottom: space.xs,
+          marginBottom: space.sm,
         }}
       >
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            flexShrink: 0,
+            borderRadius: "50%",
+            backgroundColor: accent,
+            boxShadow: `0 0 8px 1px ${accent}66`,
+          }}
+        />
         {index ? (
           <span
             style={{
               fontFamily: font.mono,
-              color: color.textFaint,
+              color: accent,
               fontSize: font.size.xs,
-              letterSpacing: 1,
+              letterSpacing: font.tracking.label,
+              textTransform: "uppercase",
             }}
           >
             {index}
@@ -32,7 +44,7 @@ export function SectionHeading({ heading, subheading, index }: SectionHeadingPro
         ) : null}
         <span
           style={{
-            width: index ? 20 : 0,
+            width: 20,
             height: 1,
             backgroundColor: color.borderStrong,
           }}
@@ -42,12 +54,13 @@ export function SectionHeading({ heading, subheading, index }: SectionHeadingPro
       <h2
         style={{
           margin: "0 auto",
-          maxWidth: 640,
+          maxWidth: 680,
           fontFamily: font.display,
           color: color.text,
-          fontSize: "clamp(1.5rem, 5vw, 2rem)",
+          fontSize: "clamp(1.4rem, 4.6vw, 2rem)",
           fontWeight: font.weight.semibold,
-          letterSpacing: -0.5,
+          letterSpacing: font.tracking.heading,
+          textTransform: "uppercase",
         }}
       >
         {heading}
@@ -56,7 +69,7 @@ export function SectionHeading({ heading, subheading, index }: SectionHeadingPro
       {subheading ? (
         <p
           style={{
-            margin: `${space.xs}px auto 0`,
+            margin: `${space.sm}px auto 0`,
             color: color.textMuted,
             fontSize: font.size.sm,
             lineHeight: 1.6,

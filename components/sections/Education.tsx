@@ -5,11 +5,64 @@ import { motion } from "framer-motion"
 import { color, space, font, radius, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
+import { use3DTilt } from "../../lib/use3DTilt"
 import { SectionHeading } from "../ui/SectionHeading"
+import { CornerBrackets } from "../ui/CornerBrackets"
 
 export interface EducationCourseworkGroup {
   category: string
   courses: string[]
+}
+
+function CourseworkCard({ group }: { group: EducationCourseworkGroup }) {
+  const tilt = use3DTilt(4)
+
+  return (
+    <motion.div
+      {...tilt.handlers}
+      style={{
+        position: "relative",
+        flex: "1 1 220px",
+        ...glassSurface(),
+        borderRadius: radius.sm,
+        padding: space.md,
+        transformPerspective: tilt.transformPerspective,
+        rotateX: tilt.rotateX,
+        rotateY: tilt.rotateY,
+      }}
+    >
+      <CornerBrackets corners={["tr"]} />
+
+      <h4
+        style={{
+          margin: 0,
+          marginBottom: space.sm,
+          color: color.accentMint,
+          fontFamily: font.mono,
+          fontSize: font.size.xs,
+          fontWeight: font.weight.semibold,
+          textTransform: "uppercase",
+          letterSpacing: font.tracking.label,
+        }}
+      >
+        {group.category}
+      </h4>
+      <div style={{ display: "flex", flexDirection: "column", gap: space.xs }}>
+        {group.courses.map((course) => (
+          <div
+            key={course}
+            style={{
+              color: color.textMuted,
+              fontSize: font.size.sm,
+              lineHeight: 1.4,
+            }}
+          >
+            {course}
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  )
 }
 
 export interface EducationData {
@@ -30,6 +83,8 @@ export interface EducationProps {
 }
 
 export function Education({ heading, subheading, data }: EducationProps) {
+  const mainTilt = use3DTilt(3)
+
   return (
     <section
       style={{
@@ -39,7 +94,7 @@ export function Education({ heading, subheading, data }: EducationProps) {
         fontFamily: font.family,
       }}
     >
-      <SectionHeading heading={heading} subheading={subheading} index="03" />
+      <SectionHeading heading={heading} subheading={subheading} index="03" accent={color.accentMint} />
 
       <motion.div
         initial="hidden"
@@ -49,15 +104,20 @@ export function Education({ heading, subheading, data }: EducationProps) {
       >
         <motion.div
           variants={fadeUp}
-          className="glass-glow-border"
+          {...mainTilt.handlers}
           style={{
             position: "relative",
             ...glassSurface(true),
-            borderRadius: radius.lg,
+            borderRadius: radius.sm,
             padding: space.lg,
             marginBottom: space.lg,
+            transformPerspective: mainTilt.transformPerspective,
+            rotateX: mainTilt.rotateX,
+            rotateY: mainTilt.rotateY,
           }}
         >
+          <CornerBrackets corners={["tr", "bl"]} />
+
           <div
             style={{
               display: "flex",
@@ -69,10 +129,11 @@ export function Education({ heading, subheading, data }: EducationProps) {
           >
             <span
               style={{
-                color: color.accentHover,
+                fontFamily: font.mono,
+                color: color.accentMint,
                 fontSize: font.size.xs,
                 fontWeight: font.weight.semibold,
-                letterSpacing: 1,
+                letterSpacing: font.tracking.label,
                 textTransform: "uppercase",
               }}
             >
@@ -98,8 +159,9 @@ export function Education({ heading, subheading, data }: EducationProps) {
               color: color.text,
               fontSize: font.size.xl,
               fontWeight: font.weight.semibold,
-              letterSpacing: -0.4,
+              letterSpacing: font.tracking.heading,
               lineHeight: 1.15,
+              textTransform: "uppercase",
             }}
           >
             {data.degree}
@@ -137,10 +199,11 @@ export function Education({ heading, subheading, data }: EducationProps) {
           <span
             style={{
               color: color.textFaint,
+              fontFamily: font.mono,
               fontSize: font.size.xs,
               fontWeight: font.weight.semibold,
               textTransform: "uppercase",
-              letterSpacing: 1,
+              letterSpacing: font.tracking.label,
             }}
           >
             Where it&rsquo;s grounded
@@ -156,45 +219,7 @@ export function Education({ heading, subheading, data }: EducationProps) {
           }}
         >
           {data.courseworkGroups.map((group) => (
-            <div
-              key={group.category}
-              className="glass-glow-border"
-              style={{
-                position: "relative",
-                flex: "1 1 220px",
-                ...glassSurface(),
-                borderRadius: radius.lg,
-                padding: space.md,
-              }}
-            >
-              <h4
-                style={{
-                  margin: 0,
-                  marginBottom: space.sm,
-                  color: color.text,
-                  fontSize: font.size.xs,
-                  fontWeight: font.weight.semibold,
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                }}
-              >
-                {group.category}
-              </h4>
-              <div style={{ display: "flex", flexDirection: "column", gap: space.xs }}>
-                {group.courses.map((course) => (
-                  <div
-                    key={course}
-                    style={{
-                      color: color.textMuted,
-                      fontSize: font.size.sm,
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    {course}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CourseworkCard key={group.category} group={group} />
           ))}
         </motion.div>
       </motion.div>

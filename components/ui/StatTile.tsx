@@ -9,13 +9,10 @@ import { CountUp } from "./CountUp"
 export interface StatTileProps {
   value: string
   label: string
-  accent?: "blue" | "amber"
+  accent?: string
 }
 
-export function StatTile({ value, label, accent = "blue" }: StatTileProps) {
-  const accentColor = accent === "amber" ? color.signal : color.accent
-  const glowRgb = accent === "amber" ? "245, 169, 58" : "74, 151, 245"
-
+export function StatTile({ value, label, accent = color.accentCyan }: StatTileProps) {
   return (
     <motion.div
       initial="rest"
@@ -30,38 +27,27 @@ export function StatTile({ value, label, accent = "blue" }: StatTileProps) {
       }}
     >
       <motion.span
-        variants={{ rest: { width: 20, opacity: 0.9 }, hover: { width: 32, opacity: 1 } }}
+        variants={{ rest: { width: 16, opacity: 0.7 }, hover: { width: 28, opacity: 1 } }}
         transition={springSnappy}
         style={{
           display: "inline-block",
-          height: 2,
-          borderRadius: 1,
-          backgroundColor: accentColor,
+          height: 1,
+          backgroundColor: accent,
           marginBottom: space.sm,
         }}
       />
       <motion.div
-        variants={{
-          rest: {
-            y: 0,
-            scale: 1,
-            textShadow: `0 0 26px rgba(${glowRgb}, 0.28), 0 0 5px rgba(${glowRgb}, 0.18)`,
-          },
-          hover: {
-            y: -2,
-            scale: 1.04,
-            textShadow: `0 0 64px rgba(${glowRgb}, 0.75), 0 0 18px rgba(${glowRgb}, 0.55)`,
-          },
-        }}
+        variants={{ rest: { y: 0 }, hover: { y: -2 } }}
         transition={springSnappy}
         style={{
           fontFamily: font.mono,
-          color: color.text,
-          fontSize: "clamp(2.2rem, 4vw, 2.9rem)",
-          fontWeight: font.weight.bold,
-          letterSpacing: -1,
+          color: accent,
+          fontSize: "clamp(2.1rem, 3.8vw, 2.7rem)",
+          fontWeight: font.weight.semibold,
+          letterSpacing: -0.5,
           lineHeight: 1,
           fontVariantNumeric: "tabular-nums",
+          textShadow: `0 0 24px ${accent}33`,
         }}
       >
         <CountUp value={value} />
@@ -69,13 +55,14 @@ export function StatTile({ value, label, accent = "blue" }: StatTileProps) {
       <div
         style={{
           color: color.textMuted,
+          fontFamily: font.mono,
           fontSize: font.size.xs,
-          fontWeight: font.weight.semibold,
-          letterSpacing: 0.6,
+          fontWeight: font.weight.medium,
+          letterSpacing: font.tracking.label,
           textTransform: "uppercase",
           marginTop: space.sm,
-          maxWidth: 160,
-          lineHeight: 1.4,
+          maxWidth: 170,
+          lineHeight: 1.5,
         }}
       >
         {label}

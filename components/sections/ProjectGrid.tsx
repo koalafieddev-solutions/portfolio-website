@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
-import { space, font, layout } from "../../lib/theme"
+import { color, space, font, layout } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { Card, CardImage, CardMeta } from "../ui/Card"
 import { SectionHeading } from "../ui/SectionHeading"
@@ -38,7 +38,9 @@ export function ProjectGrid({ heading, subheading, projects, columns = 3, featur
         fontFamily: font.family,
       }}
     >
-      {heading ? <SectionHeading heading={heading} subheading={subheading} index={sectionIndex} /> : null}
+      {heading ? (
+        <SectionHeading heading={heading} subheading={subheading} index={sectionIndex} accent={color.accentCyan} />
+      ) : null}
 
       <motion.div
         initial="hidden"
@@ -68,6 +70,7 @@ export function ProjectGrid({ heading, subheading, projects, columns = 3, featur
                 featured={isFeatured}
                 meta={project.meta}
                 highlight={project.highlight}
+                index={`N.${String(index + 1).padStart(2, "0")}`}
               />
             </motion.div>
           )
