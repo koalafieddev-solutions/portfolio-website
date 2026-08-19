@@ -47,7 +47,10 @@
   {
     "title": "Modular Spaceship Building System",
     "description": "A modular construction system for assembling spaceships piece by piece — snapping, structural logic, and part-dependency systems adapted from architectural building kits to vehicle design.",
-    "tags": ["Modular Systems", "Vehicle Design", "Construction Systems"]
+    "tags": ["Modular Systems", "Vehicle Design", "Construction Systems"],
+    "images": [
+      { "src": "/images/software-projects/modular-spaceship-building-system/modular-ship-in-asteroid-field.png", "alt": "A modular block-built spaceship assembled from snapped-together parts, floating near an asteroid field" }
+    ]
   },
   {
     "title": "Real-Time Aerodynamics Simulation",
