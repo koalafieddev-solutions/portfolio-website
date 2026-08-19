@@ -93,7 +93,7 @@ function NodeFlash({
   // the "now" node sits at full glow through the whole hold, then the
   // instant progress.set(0) reset snaps it straight to 0 with no transition
   // at all, reading as a hard cutoff instead of a fade.
-  const opacity = useTransform([progress, fade], ([v, f]) => {
+  const opacity = useTransform([progress, fade], ([v, f]: number[]) => {
     // Loop wraps 1→0, so also check the wrapped distance for nodes near
     // either end of the line — otherwise the first/last node's window gets
     // clipped right at the seam instead of the pulse re-approaching it.
@@ -321,7 +321,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
           {/* Tiny energy-particle spark — a handful of specks flung a short
               distance outward from the dot on arrival and faded, anchored
               at the same centered point as the dot itself. */}
-          <div
+          <motion.div
             aria-hidden="true"
             style={{
               position: "absolute",
@@ -358,7 +358,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                 />
               ))}
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
 
         {entries.map((entry, index) => {
