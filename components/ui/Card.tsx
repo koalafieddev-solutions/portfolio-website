@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { color, radius, space, font } from "../../lib/theme"
 import { hoverLift, springSnappy } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
@@ -13,16 +13,172 @@ export interface CardImage {
   alt?: string
 }
 
+const LOOP_INTERVAL_MS = 1000
+const FADE_DURATION_MS = 600
+
+// Crossfades on a fixed timer via two plain layers, hand-scheduled rather
+// than left to AnimatePresence's mount/exit lifecycle — that gave no way to
+// be certain the outgoing image stayed fully opaque for the *entire* fade
+// (its `exit` target only holds a value, it doesn't guarantee the browser
+// treats an unmount-pending element as still fully opaque throughout), and
+// in practice it was flashing the card's dark glass background at the
+// midpoint of every cycle.
+//
+// `bottom` is the settled, fully-revealed image — always opacity 1, never
+// transitions. `top` is the next image, fading 0 -> 1 on top of it. Because
+// `bottom` never dips below full opacity, the background can never show
+// through no matter where `top`'s fade currently is: the composite is
+// always `top*a + bottom*(1-a)`, and bottom alone already covers 100%.
+// Once `top` finishes revealing, it gets "baked" into `bottom` (an instant,
+// untransitioned swap — safe because at that instant bottom and top show
+// the identical image, so there's nothing to see even if it weren't
+// instant) and re-armed with the next image, ready to fade in again.
+function ImageLoop({ images, alt }: { images: CardImage[]; alt: string }) {
+  const reduceMotion = useReducedMotion()
+  const looping = images.length > 1 && !reduceMotion
+  const initialNextIndex = looping ? 1 % images.length : 0
+
+  const [bottomIndex, setBottomIndex] = React.useState(0)
+  const [topIndex, setTopIndex] = React.useState(initialNextIndex)
+  const [topVisible, setTopVisible] = React.useState(false)
+  const [transitionsEnabled, setTransitionsEnabled] = React.useState(true)
+
+  const topIndexRef = React.useRef(topIndex)
+  topIndexRef.current = topIndex
+
+  React.useEffect(() => {
+    if (!looping) return
+    let cancelled = false
+    let revealTimer: ReturnType<typeof setTimeout>
+    let bakeTimer: ReturnType<typeof setTimeout>
+    let raf = 0
+
+    function scheduleReveal() {
+      revealTimer = setTimeout(() => {
+        if (cancelled) return
+        setTopVisible(true)
+        bakeTimer = setTimeout(() => {
+          if (cancelled) return
+          // Transitions off + the bake + rearming the next index all land in
+          // one commit, so the browser never paints an in-between frame
+          // where `top` would visibly snap to the *next* future image
+          // before its opacity catches up.
+          setTransitionsEnabled(false)
+          setBottomIndex(topIndexRef.current)
+          setTopVisible(false)
+          setTopIndex((topIndexRef.current + 1) % images.length)
+          // Wait a real paint before re-enabling transitions, or React would
+          // batch that flip into the same commit as the reset above and the
+          // browser would never see a genuine "transitions: none" frame in
+          // between — meaning the *next* reveal's fade-in would also be
+          // skipped, since as far as the DOM is concerned `transition` never
+          // actually toggled off and back on.
+          raf = requestAnimationFrame(() => {
+            if (cancelled) return
+            setTransitionsEnabled(true)
+            scheduleReveal()
+          })
+        }, FADE_DURATION_MS)
+      }, LOOP_INTERVAL_MS - FADE_DURATION_MS)
+    }
+
+    scheduleReveal()
+    return () => {
+      cancelled = true
+      clearTimeout(revealTimer)
+      clearTimeout(bakeTimer)
+      cancelAnimationFrame(raf)
+    }
+  }, [looping, images])
+
+  const bottom = images[bottomIndex]
+  const top = images[topIndex]
+
+  return (
+    <div style={{ position: "absolute", inset: 0 }}>
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `url(${bottom.src})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        role="img"
+        aria-label={bottom.alt ?? alt}
+      />
+      {looping ? (
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${top.src})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: topVisible ? 1 : 0,
+            transition: transitionsEnabled ? `opacity ${FADE_DURATION_MS}ms ease-in-out` : "none",
+          }}
+        />
+      ) : null}
+    </div>
+  )
+}
+
 export interface CardMeta {
   value: string
   label: string
+}
+
+// The same low-saturation accent set used everywhere else on the site,
+// just a plain text color here rather than a bordered chip, so multiple
+// tags read as a clean colored label row instead of a row of boxes.
+const TAG_ACCENTS = [color.accentCyan, color.accentViolet, color.accentMint, color.accentAmber]
+
+function hashTag(tag: string): number {
+  let h = 0
+  for (let i = 0; i < tag.length; i++) {
+    h = (h * 31 + tag.charCodeAt(i)) >>> 0
+  }
+  return h
+}
+
+// Colors are keyed off each tag's own text (so "Multiplayer" reads the same
+// color on every card) rather than its position in the array — plain
+// position-based cycling meant two completely unrelated tags that just
+// happened to both sit first in their list always landed on the same
+// color, which read as arbitrary. Collisions are then nudged to the next
+// free slot so tags sharing one card never render identically, even though
+// a small fixed palette can't guarantee uniqueness across every card.
+function assignTagColors(tags: string[]): string[] {
+  const used = new Set<number>()
+  return tags.map((t) => {
+    let idx = hashTag(t) % TAG_ACCENTS.length
+    let attempts = 0
+    while (used.has(idx) && attempts < TAG_ACCENTS.length) {
+      idx = (idx + 1) % TAG_ACCENTS.length
+      attempts++
+    }
+    used.add(idx)
+    return TAG_ACCENTS[idx]
+  })
 }
 
 export interface CardProps {
   title: string
   description: string
   image?: CardImage
+  // When set (2+ entries), overrides `image` with a self-looping crossfade
+  // through every entry — for a project with multiple shots worth cycling
+  // through on their own rather than picking just one static image.
+  images?: CardImage[]
   tag?: string
+  // Multiple relevant-topic chips (distinct from the single `tag` badge
+  // next to the index number) — rendered as its own row beneath the
+  // description, for cards that need to surface several related areas
+  // (e.g. a software project touching VR + Physics + Multiplayer) rather
+  // than one category label.
+  tags?: string[]
   href?: string
   featured?: boolean
   meta?: CardMeta[]
@@ -34,7 +190,9 @@ export function Card({
   title,
   description,
   image,
+  images,
   tag,
+  tags,
   href,
   featured = false,
   meta,
@@ -42,6 +200,8 @@ export function Card({
   index,
 }: CardProps) {
   const tilt = use3DTilt()
+  const tagColors = tags && tags.length > 0 ? assignTagColors(tags) : []
+  const loopImages = images && images.length > 0 ? images : image ? [image] : []
 
   const content = (
     <motion.div
@@ -73,7 +233,7 @@ export function Card({
     >
       <CornerBrackets corners={["tr"]} />
 
-      {image?.src ? (
+      {loopImages.length > 0 ? (
         <div
           style={{
             position: "relative",
@@ -95,17 +255,7 @@ export function Card({
               this image is a child of that, so it grows right along with
               it. A second scale on top of that compounded into the image
               visibly zooming faster than the rest of the card. */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `url(${image.src})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            role="img"
-            aria-label={image.alt ?? title}
-          />
+          <ImageLoop images={loopImages} alt={title} />
           {highlight ? (
             <span
               style={{
@@ -138,12 +288,14 @@ export function Card({
           justifyContent: featured ? "center" : undefined,
         }}
       >
-        {tag || index ? (
+        {tag || index || (tags && tags.length > 0) ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: space.xs }}>
             <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
+                flexWrap: "wrap",
+                rowGap: 2,
                 gap: space.xs,
                 fontFamily: font.mono,
                 color: color.textFaint,
@@ -154,8 +306,15 @@ export function Card({
               }}
             >
               {index ? <span style={{ color: color.accentCyan }}>{index}</span> : null}
-              {index && tag ? <span aria-hidden="true">/</span> : null}
-              {tag}
+              {index && (tag || (tags && tags.length > 0)) ? <span aria-hidden="true">/</span> : null}
+              {tags && tags.length > 0
+                ? tags.map((t, i) => (
+                    <React.Fragment key={t}>
+                      {i > 0 ? <span aria-hidden="true">/</span> : null}
+                      <span style={{ color: tagColors[i] }}>{t}</span>
+                    </React.Fragment>
+                  ))
+                : tag}
             </span>
             <span
               style={{

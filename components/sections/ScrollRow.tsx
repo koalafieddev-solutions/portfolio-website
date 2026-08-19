@@ -147,7 +147,7 @@ export function ScrollRow({ heading, subheading, items, sectionIndex, accent = c
           <motion.div
             drag="x"
             dragConstraints={barRef}
-            dragElastic={0}
+            dragElastic={0.12}
             dragMomentum={false}
             onDrag={handleDrag}
             onDragStart={() => {

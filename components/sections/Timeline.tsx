@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { motion, useMotionValue, useTransform, animate } from "framer-motion"
-import { color, space, font, radius, shadow } from "../../lib/theme"
+import { AnimatePresence, motion, useMotionValue, useTransform, useReducedMotion, animate } from "framer-motion"
+import { color, space, font, radius, shadow, ease } from "../../lib/theme"
 import { staggerContainer, fadeUp } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
 import { SectionHeading } from "../ui/SectionHeading"
@@ -30,19 +30,70 @@ export interface TimelineProps {
 }
 
 // The pulse position and every node's flash are all derived from this one
-// shared progress value (0→1, looping) instead of independent animate()
-// loops — independent loops each carry their own internal clock, and that
-// clock restarts whenever a loop's transition target changes (which
-// happened here once real measured node positions replaced the initial
-// fallback), so the flashes drifted out of sync with the pulse over time.
-// Deriving both from one clock makes them synchronized by construction.
-const PULSE_DURATION = 7
+// shared progress value instead of independent animate() loops —
+// independent loops each carry their own internal clock, and that clock
+// restarts whenever a loop's transition target changes (which happened here
+// once real measured node positions replaced the initial fallback), so the
+// flashes drifted out of sync with the pulse over time. Deriving both from
+// one clock makes them synchronized by construction.
+//
+// The pulse travels top → the "now" node, holds there with a burst + scale
+// pop, then fades, resets, and travels again — rather than looping straight
+// through to the bottom of the line.
+const TRAVEL_DURATION = 3.2
+const HOLD_DURATION = 1.5
+const RESET_FADE = 0.55
 
-function NodeFlash({ progress, passT }: { progress: ReturnType<typeof useMotionValue<number>>; passT: number }) {
+interface Spark {
+  id: number
+  angle: number
+  distance: number
+  size: number
+  delay: number
+}
+
+const SPARK_COUNT = 6
+
+// Three concentric rings, staggered slightly, radiating out and fading —
+// a soft ripple rather than one ring popping out — each on its own
+// generous duration so the fade itself never feels rushed.
+const RING_BURSTS = [
+  { delay: 0, scale: 3.2, opacity: 0.95, width: 2 },
+  { delay: 0.14, scale: 4.6, opacity: 0.75, width: 1.5 },
+  { delay: 0.28, scale: 6, opacity: 0.55, width: 1.5 },
+]
+
+function makeSparks(seed: number): Spark[] {
+  return Array.from({ length: SPARK_COUNT }, (_, i) => {
+    const spread = (i / SPARK_COUNT) * Math.PI * 2
+    return {
+      id: seed + i,
+      angle: spread + (Math.random() - 0.5) * 0.6,
+      distance: 10 + Math.random() * 12,
+      size: 2 + Math.random() * 2,
+      delay: Math.random() * 0.05,
+    }
+  })
+}
+
+function NodeFlash({
+  progress,
+  passT,
+  fade,
+}: {
+  progress: ReturnType<typeof useMotionValue<number>>
+  passT: number
+  fade: ReturnType<typeof useMotionValue<number>>
+}) {
   const rampIn = 0.012
   const rampOut = 0.035
 
-  const opacity = useTransform(progress, (v) => {
+  // Multiplied against `fade` (the same value the traveling dot fades
+  // through on reset) rather than driven by `progress` alone — otherwise
+  // the "now" node sits at full glow through the whole hold, then the
+  // instant progress.set(0) reset snaps it straight to 0 with no transition
+  // at all, reading as a hard cutoff instead of a fade.
+  const opacity = useTransform([progress, fade], ([v, f]) => {
     // Loop wraps 1→0, so also check the wrapped distance for nodes near
     // either end of the line — otherwise the first/last node's window gets
     // clipped right at the seam instead of the pulse re-approaching it.
@@ -50,9 +101,10 @@ function NodeFlash({ progress, passT }: { progress: ReturnType<typeof useMotionV
     const wrapped = direct > 0 ? direct - 1 : direct + 1
     const d = Math.abs(direct) <= Math.abs(wrapped) ? direct : wrapped
 
-    if (d <= 0 && d >= -rampIn) return 1 + d / rampIn
-    if (d > 0 && d <= rampOut) return 1 - d / rampOut
-    return 0
+    let base = 0
+    if (d <= 0 && d >= -rampIn) base = 1 + d / rampIn
+    else if (d > 0 && d <= rampOut) base = 1 - d / rampOut
+    return base * f
   })
 
   return (
@@ -83,31 +135,89 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
 
   const progress = useMotionValue(0)
   const pulseTop = useTransform(progress, (v) => `${v * 100}%`)
+  const pulseScale = useMotionValue(1)
+  const pulseOpacity = useMotionValue(1)
+  const [burstKey, setBurstKey] = React.useState(0)
+  const [sparks, setSparks] = React.useState<Spark[]>([])
+  const sparkSeedRef = React.useRef(0)
+  const sparkTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+
+  const nowIndex = React.useMemo(() => {
+    const i = entries.findIndex((e) => e.live)
+    return i === -1 ? entries.length - 1 : i
+  }, [entries])
+
+  const reduceMotion = useReducedMotion()
 
   React.useEffect(() => {
-    const controls = animate(progress, 1, {
-      duration: PULSE_DURATION,
-      repeat: Infinity,
-      ease: "linear",
-    })
-    return () => controls.stop()
-  }, [progress])
+    let cancelled = false
+    const fallbackT = entries.length > 1 ? nowIndex / (entries.length - 1) : 0
+    const targetT = nodeFractions[nowIndex] ?? fallbackT
 
-  React.useEffect(() => {
-    function measure() {
-      const line = lineRef.current
-      if (!line) return
-      const lineRect = line.getBoundingClientRect()
-      if (lineRect.height === 0) return
-      const fractions = nodeRefs.current.map((el) => {
-        if (!el) return 0
-        const elRect = el.getBoundingClientRect()
-        const center = elRect.top + elRect.height / 2 - lineRect.top
-        return Math.min(1, Math.max(0, center / lineRect.height))
-      })
-      setNodeFractions(fractions)
+    // Reduced motion: settle once on the "now" node — its glow stays lit
+    // via NodeFlash reading the same `progress`/`pulseOpacity` values —
+    // and skip the repeating travel/burst/particle cycle entirely rather
+    // than just trimming its extras.
+    if (reduceMotion) {
+      progress.set(targetT)
+      pulseScale.set(1)
+      pulseOpacity.set(1)
+      return
     }
 
+    async function cycle() {
+      while (!cancelled) {
+        progress.set(0)
+        pulseScale.set(1)
+        pulseOpacity.set(1)
+
+        await animate(progress, targetT, { duration: TRAVEL_DURATION, ease: "linear" })
+        if (cancelled) return
+
+        // Arrival: a quick expand-and-settle pop on the dot itself, a
+        // one-shot ring burst, and a small handful of energy particles
+        // flung outward — all fired from the same synced clock moment.
+        setBurstKey((k) => k + 1)
+        sparkSeedRef.current += SPARK_COUNT
+        setSparks(makeSparks(sparkSeedRef.current))
+        if (sparkTimeoutRef.current) clearTimeout(sparkTimeoutRef.current)
+        sparkTimeoutRef.current = setTimeout(() => setSparks([]), 500)
+
+        await animate(pulseScale, [1, 1.9, 1], { duration: 0.6, ease: [0.34, 1.56, 0.64, 1] })
+        if (cancelled) return
+
+        await new Promise((resolve) => setTimeout(resolve, HOLD_DURATION * 1000))
+        if (cancelled) return
+
+        await animate(pulseOpacity, 0, { duration: RESET_FADE, ease: "easeInOut" })
+        if (cancelled) return
+        progress.set(0)
+        await animate(pulseOpacity, 1, { duration: RESET_FADE, ease: "easeInOut" })
+      }
+    }
+
+    cycle()
+    return () => {
+      cancelled = true
+      if (sparkTimeoutRef.current) clearTimeout(sparkTimeoutRef.current)
+    }
+  }, [progress, pulseScale, pulseOpacity, nodeFractions, nowIndex, entries.length, reduceMotion])
+
+  const measure = React.useCallback(() => {
+    const line = lineRef.current
+    if (!line) return
+    const lineRect = line.getBoundingClientRect()
+    if (lineRect.height === 0) return
+    const fractions = nodeRefs.current.map((el) => {
+      if (!el) return 0
+      const elRect = el.getBoundingClientRect()
+      const center = elRect.top + elRect.height / 2 - lineRect.top
+      return Math.min(1, Math.max(0, center / lineRect.height))
+    })
+    setNodeFractions(fractions)
+  }, [])
+
+  React.useEffect(() => {
     measure()
     // Re-measure shortly after mount too — web font swap can reflow text
     // height right after the initial paint this effect ran on.
@@ -117,7 +227,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
       clearTimeout(settleTimer)
       window.removeEventListener("resize", measure)
     }
-  }, [entries.length])
+  }, [entries.length, measure])
 
   return (
     <section
@@ -135,6 +245,13 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
         whileInView="visible"
         viewport={{ once: true, amount: 0.1, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
+        // Entries measured above land ~18px low until this reveal settles
+        // (fadeUp's hidden state is translateY(18px), and getBoundingClientRect
+        // picks that transform up) — re-measure once the entrance animation
+        // has had time to finish so the pulse's target position is accurate.
+        onViewportEnter={() => {
+          setTimeout(measure, 1500)
+        }}
         style={{ position: "relative" }}
       >
         <div
@@ -164,11 +281,84 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
               width: 5,
               height: 5,
               marginLeft: -2,
+              marginTop: -2.5,
               borderRadius: "50%",
               backgroundColor: color.accentViolet,
               boxShadow: `0 0 10px 2px ${color.accentViolet}80`,
+              scale: pulseScale,
+              opacity: pulseOpacity,
             }}
           />
+
+          {/* One-shot burst rings — three concentric ripples fired each time
+              the pulse arrives at the "now" node, radiating outward and
+              fading in a soft, staggered wave, then swapped out (via key)
+              rather than looped. */}
+          {burstKey > 0 &&
+            RING_BURSTS.map((ring, i) => (
+              <motion.span
+                key={`${burstKey}-${i}`}
+                aria-hidden="true"
+                initial={{ scale: 0.5, opacity: ring.opacity }}
+                animate={{ scale: ring.scale, opacity: 0 }}
+                transition={{ duration: 1.1, delay: ring.delay, ease: ease.out }}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: pulseTop,
+                  width: 5,
+                  height: 5,
+                  marginLeft: -2,
+                  marginTop: -2.5,
+                  borderRadius: "50%",
+                  border: `${ring.width}px solid ${color.accentViolet}`,
+                  boxShadow: `0 0 8px 1px ${color.accentViolet}99`,
+                  pointerEvents: "none",
+                }}
+              />
+            ))}
+
+          {/* Tiny energy-particle spark — a handful of specks flung a short
+              distance outward from the dot on arrival and faded, anchored
+              at the same centered point as the dot itself. */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: pulseTop,
+              marginTop: -2.5,
+              width: 0,
+              height: 0,
+              pointerEvents: "none",
+            }}
+          >
+            <AnimatePresence>
+              {sparks.map((s) => (
+                <motion.span
+                  key={s.id}
+                  initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                  animate={{
+                    x: Math.cos(s.angle) * s.distance,
+                    y: Math.sin(s.angle) * s.distance,
+                    opacity: 0,
+                    scale: 0.4,
+                  }}
+                  transition={{ duration: 0.45, delay: s.delay, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    position: "absolute",
+                    width: s.size,
+                    height: s.size,
+                    marginLeft: -s.size / 2,
+                    marginTop: -s.size / 2,
+                    borderRadius: "50%",
+                    backgroundColor: color.accentViolet,
+                    boxShadow: `0 0 4px 1px ${color.accentViolet}AA`,
+                  }}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
         </div>
 
         {entries.map((entry, index) => {
@@ -236,7 +426,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
                 {/* Lights up exactly when the traveling pulse reaches this
                     node — driven from the same shared clock as the pulse
                     itself, so it can't drift out of sync. */}
-                <NodeFlash progress={progress} passT={passT} />
+                <NodeFlash progress={progress} passT={passT} fade={pulseOpacity} />
               </span>
             </div>
 

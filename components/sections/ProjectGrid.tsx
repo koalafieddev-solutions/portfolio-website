@@ -11,7 +11,9 @@ export interface ProjectGridItem {
   title: string
   description: string
   tag?: string
+  tags?: string[]
   image?: CardImage
+  images?: CardImage[]
   href?: string
   meta?: CardMeta[]
   highlight?: boolean
@@ -24,9 +26,21 @@ export interface ProjectGridProps {
   columns?: number
   featuredIndex?: number
   sectionIndex?: string
+  // The per-card "N.01" badge — on by default (matches the commercial
+  // assets grid), set false to drop it where a running item count doesn't
+  // add anything (e.g. a project list that isn't meant to read as ranked).
+  showItemIndex?: boolean
 }
 
-export function ProjectGrid({ heading, subheading, projects, columns = 3, featuredIndex, sectionIndex }: ProjectGridProps) {
+export function ProjectGrid({
+  heading,
+  subheading,
+  projects,
+  columns = 3,
+  featuredIndex,
+  sectionIndex,
+  showItemIndex = true,
+}: ProjectGridProps) {
   const minItemWidth = Math.max(240, Math.floor(1240 / columns) - 40)
 
   return (
@@ -65,12 +79,14 @@ export function ProjectGrid({ heading, subheading, projects, columns = 3, featur
                 title={project.title}
                 description={project.description}
                 tag={project.tag}
+                tags={project.tags}
                 image={project.image}
+                images={project.images}
                 href={project.href}
                 featured={isFeatured}
                 meta={project.meta}
                 highlight={project.highlight}
-                index={`N.${String(index + 1).padStart(2, "0")}`}
+                index={showItemIndex ? `N.${String(index + 1).padStart(2, "0")}` : undefined}
               />
             </motion.div>
           )

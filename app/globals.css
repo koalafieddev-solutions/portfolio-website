@@ -53,6 +53,26 @@ img {
   display: block;
 }
 
+/* Keyboard-only focus ring — :focus-visible (not :focus) so it shows for
+   Tab navigation but never for a mouse click, matching the platform
+   convention every OS/browser already trains people to expect. Outline
+   rather than box-shadow: it paints outside the box unaffected by any
+   ancestor's overflow:hidden (several cards/images here clip via
+   overflow), so it can't silently get cut off on a clipped element. */
+:focus-visible {
+  outline: 2px solid #8fd8ff;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Instant press feedback for plain (non-Framer) links — nav items and CTAs
+   that only animate color via inline transition today. transform is added
+   to that same inline transition list at each call site so this doesn't
+   fight it; :active only needs to state the target value. */
+.press-scale:active {
+  transform: scale(0.96);
+}
+
 ::selection {
   background: rgba(255, 255, 255, 0.18);
   color: #f2f3f5;
@@ -270,6 +290,47 @@ img {
 
   .stats-grid > div:last-child {
     border-right: none;
+  }
+}
+
+/* Apple-Intelligence-style iridescent sheen sweeping through the CTA
+   headline — a multi-hue light pass (cyan/violet/mint) with a soft synced
+   glow at its peak, reading as premium polish rather than decoration. */
+@keyframes gradient-sheen {
+  0% {
+    background-position: 220% center;
+    filter: drop-shadow(0 0 0 rgba(143, 216, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(185, 174, 221, 0.4));
+  }
+  100% {
+    background-position: -220% center;
+    filter: drop-shadow(0 0 0 rgba(143, 216, 255, 0));
+  }
+}
+
+.gradient-sheen-text {
+  background-image: linear-gradient(
+    100deg,
+    #f2f3f5 8%,
+    #8fd8ff 26%,
+    #b9aedd 42%,
+    #8fdbc4 58%,
+    #f2f3f5 76%
+  );
+  background-size: 280% auto;
+  background-position: 220% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-sheen 4.5s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-sheen-text {
+    animation: none;
+    background-position: 0% center;
   }
 }
 

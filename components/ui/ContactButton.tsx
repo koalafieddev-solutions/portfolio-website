@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { color, space, font, radius } from "../../lib/theme"
 import { glassSurface } from "../../lib/glass"
 
@@ -13,6 +13,20 @@ export interface ContactButtonProps {
 interface ContactChipProps {
   label: string
   value: string
+  accent: string
+}
+
+function CopyIcon({ size = 12, color: iconColor }: { size?: number; color: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" style={{ display: "block" }}>
+      <rect x="5.5" y="5.5" width="9" height="9" rx="1.5" stroke={iconColor} strokeWidth="1.2" />
+      <path
+        d="M3.5 10.5H2.5C1.94772 10.5 1.5 10.0523 1.5 9.5V2.5C1.5 1.94772 1.94772 1.5 2.5 1.5H9.5C10.0523 1.5 10.5 1.94772 10.5 2.5V3.5"
+        stroke={iconColor}
+        strokeWidth="1.2"
+      />
+    </svg>
+  )
 }
 
 interface ConfettiPiece {
@@ -45,18 +59,26 @@ function makeConfetti(seed: number): ConfettiPiece[] {
   })
 }
 
-function ContactChip({ label, value }: ContactChipProps) {
+const SWEEP_DURATION = 0.6
+
+function ContactChip({ label, value, accent }: ContactChipProps) {
   const [copied, setCopied] = React.useState(false)
+  const [hovered, setHovered] = React.useState(false)
+  const [energized, setEnergized] = React.useState(false)
   const [confetti, setConfetti] = React.useState<ConfettiPiece[]>([])
   const copiedTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
   const confettiTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
+  const energizeTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>()
   const seedRef = React.useRef(0)
+  const sweepKeyRef = React.useRef(0)
   const successColor = color.status
+  const reduceMotion = useReducedMotion()
 
   React.useEffect(() => {
     return () => {
       if (copiedTimeoutRef.current) clearTimeout(copiedTimeoutRef.current)
       if (confettiTimeoutRef.current) clearTimeout(confettiTimeoutRef.current)
+      if (energizeTimeoutRef.current) clearTimeout(energizeTimeoutRef.current)
     }
   }, [])
 
@@ -74,17 +96,38 @@ function ContactChip({ label, value }: ContactChipProps) {
     confettiTimeoutRef.current = setTimeout(() => setConfetti([]), 850)
   }
 
+  // Sheen sweeps once per hover-in, then the button settles into a held
+  // "energized" glow for the rest of the hover — not a symmetric loop, so
+  // there's nothing to animate backward (and look wrong) on hover-out.
+  const handleHoverStart = () => {
+    setHovered(true)
+    setEnergized(false)
+    sweepKeyRef.current += 1
+    if (energizeTimeoutRef.current) clearTimeout(energizeTimeoutRef.current)
+    energizeTimeoutRef.current = setTimeout(() => setEnergized(true), SWEEP_DURATION * 1000)
+  }
+
+  const handleHoverEnd = () => {
+    setHovered(false)
+    setEnergized(false)
+    if (energizeTimeoutRef.current) clearTimeout(energizeTimeoutRef.current)
+  }
+
   const glass = glassSurface()
+  const glowColor = copied ? successColor : accent
+  const charged = copied || energized
 
   return (
     <motion.button
       type="button"
       onClick={handleCopy}
+      onHoverStart={handleHoverStart}
+      onHoverEnd={handleHoverEnd}
       initial="rest"
       whileHover="hover"
       whileTap={{ scale: 0.96 }}
       animate={copied ? { y: -2, scale: 1.06 } : "rest"}
-      variants={{ rest: { y: 0, scale: 1 }, hover: { y: -2, scale: 1 } }}
+      variants={{ rest: { y: 0, scale: 1 }, hover: { y: -3, scale: 1.015 } }}
       transition={copied ? { type: "spring", stiffness: 500, damping: 13 } : { type: "spring", stiffness: 520, damping: 32, mass: 0.7 }}
       style={{
         position: "relative",
@@ -100,11 +143,97 @@ function ContactChip({ label, value }: ContactChipProps) {
         fontFamily: font.family,
         overflow: "visible",
         ...glass,
-        borderColor: copied ? successColor : color.glassBorder,
-        boxShadow: copied ? `${glass.boxShadow}, 0 0 28px -2px ${successColor}80` : glass.boxShadow,
-        transition: "border-color 0.18s ease-out, box-shadow 0.25s ease-out",
+        borderColor: charged ? glowColor : hovered ? color.borderStrong : color.glassBorder,
+        boxShadow: charged
+          ? `${glass.boxShadow}, 0 0 4px 1px ${glowColor}, 0 0 44px -6px ${glowColor}`
+          : glass.boxShadow,
+        transition: "border-color 0.2s ease-out, box-shadow 0.35s ease-out",
       }}
     >
+      {/* Idle breathing glow — a faint, slow pulse behind the button so it
+          reads as alive/interactive before the cursor ever reaches it. */}
+      {!reduceMotion && (
+        <motion.div
+          aria-hidden
+          animate={{ opacity: hovered ? 0 : [0.16, 0.4, 0.16] }}
+          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: "absolute",
+            inset: -1,
+            borderRadius: radius.sm,
+            boxShadow: `0 0 22px -2px ${accent}80`,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
+      {/* Energized wash — once the sheen finishes its pass, a warm tinted
+          glow fills the glass and gently breathes for as long as the button
+          stays hovered, reading as "charged up" rather than just outlined. */}
+      <motion.div
+        aria-hidden
+        initial={false}
+        animate={{ opacity: charged ? (reduceMotion ? 0.22 : [0.14, 0.3, 0.14]) : 0 }}
+        transition={
+          charged && !reduceMotion
+            ? { duration: 1.7, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0.25 }
+        }
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: radius.sm,
+          background: `radial-gradient(120% 130% at 50% 0%, ${glowColor}66, transparent 72%)`,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* Diagonal shine sweep — a single one-way light streak that glides
+          across the glass on hover-in and is unmounted (never reversed) so
+          it never plays backward on hover-out. */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: radius.sm,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
+        {hovered && !reduceMotion && (
+          <motion.span
+            key={sweepKeyRef.current}
+            initial={{ x: "-160%" }}
+            animate={{ x: "160%" }}
+            transition={{ duration: SWEEP_DURATION, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "absolute",
+              top: "-40%",
+              left: "-10%",
+              width: "40%",
+              height: "180%",
+              background: "linear-gradient(100deg, transparent, rgba(255,255,255,0.32), transparent)",
+              transform: "skewX(-18deg)",
+            }}
+          />
+        )}
+      </div>
+
+      {/* Copy affordance icon — fades and lifts in on hover, top-right. */}
+      <motion.span
+        aria-hidden
+        variants={{ rest: { opacity: 0, scale: 0.85 }, hover: { opacity: 1, scale: 1 } }}
+        transition={{ duration: 0.18 }}
+        style={{
+          position: "absolute",
+          top: space.sm,
+          right: space.sm,
+        }}
+      >
+        <CopyIcon size={12} color={copied ? successColor : accent} />
+      </motion.span>
+
       {/* Confetti burst — small paper-like rects flung outward from the
           button's center and faded/rotated away, purely decorative (no
           layout impact), cleared from state once the animation settles. */}
@@ -146,9 +275,12 @@ function ContactChip({ label, value }: ContactChipProps) {
 
       <span
         style={{
+          position: "relative",
+          zIndex: 1,
           display: "inline-flex",
           alignItems: "center",
           gap: 6,
+          paddingRight: space.md,
           color: color.textFaint,
           fontFamily: font.mono,
           fontSize: font.size.xs,
@@ -161,7 +293,7 @@ function ContactChip({ label, value }: ContactChipProps) {
         {label}
       </span>
 
-      <span style={{ display: "grid", width: "100%" }}>
+      <span style={{ position: "relative", zIndex: 1, display: "grid", width: "100%" }}>
         <AnimatePresence mode="wait" initial={false}>
           {copied ? (
             <motion.span
@@ -220,8 +352,8 @@ export function ContactButton({ email, discord }: ContactButtonProps) {
       </span>
 
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: space.sm }}>
-        <ContactChip label="Email" value={email} />
-        <ContactChip label="Discord" value={discord} />
+        <ContactChip label="Email" value={email} accent={color.accentCyan} />
+        <ContactChip label="Discord" value={discord} accent={color.accentViolet} />
       </div>
     </div>
   )

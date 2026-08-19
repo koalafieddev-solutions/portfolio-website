@@ -1,0 +1,73 @@
+[
+  {
+    "title": "VR Micro World Systems",
+    "description": "A VR exploration of miniature, tabletop-scale worlds — designing the interaction and scale systems needed to view and manipulate an entire environment from a god's-eye perspective.",
+    "tags": ["VR", "Interaction Design", "Scale Systems"]
+  },
+  {
+    "title": "Micro Voxel World Simulation",
+    "description": "A contained voxel world simulation — the chunking, generation, and interaction systems needed to make a small-scale voxel environment feel alive and editable in real time.",
+    "tags": ["Voxel Systems", "Procedural Generation", "Simulation"]
+  },
+  {
+    "title": "Advanced Multiplayer Systems Testing",
+    "description": "A dedicated testbed for stress-testing replication, ownership, and RPC patterns under real network conditions — built to validate multiplayer systems before they ship, not after.",
+    "tags": ["Multiplayer", "Replication", "Network Testing"]
+  },
+  {
+    "title": "Multiplayer Vehicle Physics",
+    "description": "Replicated vehicle physics for wartime-era multiplayer vehicles — synchronizing suspension, damage state, and driver input across the network without desync.",
+    "tags": ["Vehicle Physics", "Multiplayer", "Replication"]
+  },
+  {
+    "title": "Physics-Based VR Combat Systems",
+    "description": "Physics-driven melee and combat interactions in VR — grip, weight, and collision response built on real physics simulation instead of canned animation.",
+    "tags": ["VR", "Physics Simulation", "Combat Systems"]
+  },
+  {
+    "title": "Multiplayer Inventory & Data Systems",
+    "description": "A replicated inventory and data-management framework — built around ownership, prediction, and save/load persistence for networked multiplayer games.",
+    "tags": ["Multiplayer", "Data Management", "Persistence"]
+  },
+  {
+    "title": "Top-Down Multiplayer Defense Systems",
+    "description": "A top-down multiplayer defense system — networked wave logic, unit placement, and shared-state coordination between players defending the same objective.",
+    "tags": ["Multiplayer", "Top-Down Gameplay", "Defense Systems"]
+  },
+  {
+    "title": "Micro Planet Systems",
+    "description": "Small-scale procedural planets with spherical gravity and traversal — the systems behind walking, building, and navigating a world that curves back on itself.",
+    "tags": ["Procedural Generation", "Spherical Gravity", "Space Systems"]
+  },
+  {
+    "title": "Planetary Rover Simulation",
+    "description": "A rover traversal simulation with wheel-by-wheel suspension and terrain response — built to explore realistic locomotion over uneven, procedurally shaped ground.",
+    "tags": ["Vehicle Simulation", "Terrain Systems", "Physics"]
+  },
+  {
+    "title": "Modular Spaceship Building System",
+    "description": "A modular construction system for assembling spaceships piece by piece — snapping, structural logic, and part-dependency systems adapted from architectural building kits to vehicle design.",
+    "tags": ["Modular Systems", "Vehicle Design", "Construction Systems"]
+  },
+  {
+    "title": "Real-Time Aerodynamics Simulation",
+    "description": "A real-time aerodynamic force simulation — lift, drag, and control-surface response computed live, bringing aerospace engineering fundamentals directly into the engine.",
+    "tags": ["Aerodynamics", "Real-Time Simulation", "Aerospace Engineering"]
+  },
+  {
+    "title": "Modular Rocket Building System",
+    "description": "A modular rocket construction system in the spirit of Kerbal Space Program — staging, part attachment, and thrust-to-mass systems built from the ground up.",
+    "tags": ["Modular Systems", "Rocketry", "Staging Systems"]
+  },
+  {
+    "title": "Dynamic Mesh Generation for Base Building",
+    "description": "A base-building system that generates its own geometry at runtime instead of snapping together pre-made pieces — walls, floors, and structural meshes built and welded procedurally as the player places them.",
+    "tags": ["Dynamic Mesh Generation", "Procedural Generation", "Base Building"],
+    "images": [
+      { "src": "/images/software-projects/dynamic-mesh-generation-for-base-building/img1.png", "alt": "Procedurally generated base interior" },
+      { "src": "/images/software-projects/dynamic-mesh-generation-for-base-building/img2.png", "alt": "Procedurally generated base interior with mesh edges highlighted" },
+      { "src": "/images/software-projects/dynamic-mesh-generation-for-base-building/img3.png", "alt": "Procedurally generated base interior with mesh edges highlighted, windows visible" },
+      { "src": "/images/software-projects/dynamic-mesh-generation-for-base-building/img4.png", "alt": "Procedurally generated base interior, alternate angle" }
+    ]
+  }
+]

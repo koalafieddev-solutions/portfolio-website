@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence, useScroll, useSpring, useMotionValueEvent } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { color, space, font, layout, radius } from "../../lib/theme"
 import { springSoft } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
@@ -62,6 +62,7 @@ function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
   return (
     <a
       href={link.href}
+      className="press-scale"
       style={{
         position: "relative",
         display: "inline-flex",
@@ -74,7 +75,7 @@ function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
         letterSpacing: font.tracking.label,
         textDecoration: "none",
         padding: `6px ${space.sm}px`,
-        transition: "color 0.18s ease-out",
+        transition: "color 0.18s ease-out, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
       onMouseEnter={(e) => {
         if (!active) e.currentTarget.style.color = color.text
@@ -106,10 +107,6 @@ function NavLinkItem({ link, active }: { link: NavLink; active: boolean }) {
 export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
   const [menuOpen, setMenuOpen] = React.useState(false)
   const activeHref = useActiveSection(links)
-  const { scrollYProgress } = useScroll()
-  const progress = useSpring(scrollYProgress, { stiffness: 300, damping: 40, mass: 0.4 })
-  const [scrollPercent, setScrollPercent] = React.useState(0)
-  useMotionValueEvent(scrollYProgress, "change", (v) => setScrollPercent(Math.round(v * 100)))
 
   return (
     <motion.header
@@ -124,20 +121,6 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
         fontFamily: font.family,
       }}
     >
-      <motion.div
-        style={{
-          scaleX: progress,
-          transformOrigin: "0%",
-          position: "absolute",
-          top: -1,
-          left: 0,
-          right: 0,
-          height: 1,
-          backgroundColor: color.accentCyan,
-          boxShadow: `0 0 8px ${color.accentCyan}80`,
-        }}
-      />
-
       <div
         style={{
           display: "flex",
@@ -150,6 +133,7 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
       >
         <a
           href="#"
+          className="press-scale"
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -161,6 +145,7 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
             letterSpacing: font.tracking.label,
             textTransform: "uppercase",
             textDecoration: "none",
+            transition: "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           <span
@@ -184,22 +169,10 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
           {links.map((link) => (
             <NavLinkItem key={link.href} link={link} active={activeHref === link.href} />
           ))}
-          <span
-            style={{
-              fontFamily: font.mono,
-              fontSize: font.size.xs,
-              color: color.textFaint,
-              letterSpacing: 0.5,
-              paddingLeft: space.xs,
-              borderLeft: `1px solid ${color.border}`,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            {String(scrollPercent).padStart(2, "0")}%
-          </span>
           {ctaLabel && ctaHref ? (
             <a
               href={ctaHref}
+              className="press-scale"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -212,7 +185,8 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
                 textTransform: "uppercase",
                 letterSpacing: font.tracking.label,
                 textDecoration: "none",
-                transition: "border-color 0.18s ease-out, background-color 0.18s ease-out",
+                transition:
+                  "border-color 0.18s ease-out, background-color 0.18s ease-out, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = color.text
@@ -290,7 +264,9 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
+                  className="press-scale"
                   style={{
+                    display: "block",
                     color: activeHref === link.href ? color.text : color.textMuted,
                     fontFamily: font.mono,
                     fontSize: font.size.sm,
@@ -299,6 +275,7 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
                     letterSpacing: font.tracking.label,
                     textDecoration: "none",
                     padding: `${space.xs}px 0`,
+                    transition: "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   {link.label}
@@ -308,6 +285,7 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
                 <a
                   href={ctaHref}
                   onClick={() => setMenuOpen(false)}
+                  className="press-scale"
                   style={{
                     marginTop: space.xxs,
                     display: "inline-flex",
@@ -321,6 +299,7 @@ export function Navbar({ brand, links, ctaLabel, ctaHref }: NavbarProps) {
                     textTransform: "uppercase",
                     letterSpacing: font.tracking.label,
                     textDecoration: "none",
+                    transition: "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
                   }}
                 >
                   {ctaLabel}

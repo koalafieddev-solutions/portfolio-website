@@ -78,11 +78,6 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
   const panelRotateY = useTransform(springX, [0, 100], [-0.6, 0.6])
   const panelRotateX = useTransform(springY, [0, 100], [0.5, -0.5])
 
-  // Micro-HUD coordinate readout — the same pointer position rendered as
-  // engineering coordinates, echoing the reference's "X: 43.56 / Y: 19.76."
-  const coordX = useTransform(springX, (v) => v.toFixed(2))
-  const coordY = useTransform(springY, (v) => v.toFixed(2))
-
   const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
     mouseX.set(((event.clientX - rect.left) / rect.width) * 100)
@@ -170,29 +165,6 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
         >
           <CornerBrackets corners={["tr", "bl", "br"]} tint={color.glassBorder} />
 
-          <span
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              top: space.sm,
-              right: space.md,
-              display: "flex",
-              gap: space.sm,
-              color: color.textFaint,
-              fontFamily: font.mono,
-              fontSize: 10,
-              letterSpacing: font.tracking.label,
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            <span>
-              X: <motion.span>{coordX}</motion.span>
-            </span>
-            <span>
-              Y: <motion.span>{coordY}</motion.span>
-            </span>
-          </span>
-
           {eyebrow ? (
             <motion.span
               variants={fadeUp}
@@ -223,7 +195,11 @@ export function Hero({ eyebrow, headline, subhead, backgroundImage, children }: 
               color: color.text,
               fontSize: "clamp(2.2rem, 5.2vw, 3.6rem)",
               fontWeight: font.weight.semibold,
-              letterSpacing: 0.2,
+              // Negative and em-based rather than the site's usual fixed
+              // px tracking token — the biggest text on the page needs
+              // tightening as it grows, not a flat positive value, and
+              // `em` keeps that proportional as the clamp() resizes it.
+              letterSpacing: "-0.01em",
               textTransform: "uppercase",
               lineHeight: 1.1,
               maxWidth: 760,

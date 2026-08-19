@@ -14,6 +14,7 @@ import { CornerBrackets } from "../components/ui/CornerBrackets"
 import { color, space, font, radius, layout } from "../lib/theme"
 import { glassSurface } from "../lib/glass"
 import products from "../content/products.json"
+import softwareProjects from "../content/software-projects.json"
 import videos from "../content/videos.json"
 import timeline from "../content/timeline.json"
 import education from "../content/education.json"
@@ -31,6 +32,7 @@ const navLinks = [
   { label: "Story", href: "#story" },
   { label: "Education", href: "#education" },
   { label: "Products", href: "#products" },
+  { label: "Software", href: "#software-projects" },
   { label: "Tutorials", href: "#tutorials" },
   { label: "Contact", href: "#contact" },
 ]
@@ -80,6 +82,41 @@ export default function Home() {
       </Hero>
 
       <StatsBar kicker="By the Numbers" items={stats} />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          margin: `${space.lg}px auto`,
+        }}
+      >
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: space.xs,
+            color: color.textMuted,
+            fontFamily: font.mono,
+            fontSize: font.size.xs,
+            fontWeight: font.weight.medium,
+            letterSpacing: font.tracking.label,
+            textTransform: "uppercase",
+          }}
+        >
+          <span
+            style={{
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              backgroundColor: color.accentCyan,
+              boxShadow: `0 0 6px 1px ${color.accentCyan}80`,
+              flexShrink: 0,
+            }}
+          />
+          Based out of{" "}
+          <span style={{ color: color.accentCyan, fontWeight: font.weight.semibold }}>Miami, FL</span>
+        </div>
+      </div>
 
       <div style={{ height: space.xl }} />
 
@@ -200,12 +237,23 @@ export default function Home() {
         />
       </div>
 
+      <div id="software-projects">
+        <ProjectGrid
+          heading="Recent Software Projects"
+          subheading="Self-directed systems and simulation work — the technical playground where new mechanics get prototyped before anything ships in commercial work."
+          projects={softwareProjects}
+          columns={3}
+          sectionIndex="06"
+          showItemIndex={false}
+        />
+      </div>
+
       <div id="tutorials">
         <ScrollRow
           heading="Tutorials"
           subheading="Character systems, combat, environment art, and UE5 fundamentals — scroll for more."
           items={tutorialVideos}
-          sectionIndex="06"
+          sectionIndex="07"
           accent={color.accentViolet}
         />
         <ScrollRow heading="Setup Guides" items={setupGuideVideos} accent={color.accentAmber} />
@@ -243,17 +291,17 @@ export default function Home() {
               letterSpacing: font.tracking.label,
             }}
           >
-            07
+            08
           </span>
           <span style={{ width: 20, height: 1, backgroundColor: color.borderStrong }} />
         </div>
 
         <h2
+          className="gradient-sheen-text"
           style={{
             margin: 0,
             marginBottom: space.xs,
             fontFamily: font.display,
-            color: color.text,
             fontSize: font.size.xl,
             fontWeight: font.weight.semibold,
             letterSpacing: font.tracking.heading,

@@ -30,24 +30,29 @@ const variantFill: Record<NonNullable<ButtonProps["variant"]>, React.CSSProperti
 // cyan bleed on hover rather than just darkening.
 const insetEdge = "inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(0, 0, 0, 0.3)"
 
+// Hover/tap both settle through springSnappy rather than a fixed
+// duration+ease curve — matches the icon micro-motion in the same button
+// (below) and, more importantly, means rapidly re-triggering hover/tap
+// (mouse in-out-in, fast repeat taps) re-targets from the live position
+// instead of restarting a scripted tween.
 const liftVariants = {
   rest: { y: 0, boxShadow: `${insetEdge}, 0 6px 16px -8px rgba(0, 0, 0, 0.45)` },
   hover: {
     y: -2,
     boxShadow: `${insetEdge}, 0 16px 32px -10px rgba(0, 0, 0, 0.55), 0 0 26px -6px rgba(143, 216, 255, 0.2)`,
-    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+    transition: springSnappy,
   },
   tap: {
     y: 1,
     boxShadow: `${insetEdge}, 0 4px 10px -4px rgba(0, 0, 0, 0.4)`,
-    transition: { duration: 0.12, ease: [0.4, 0, 1, 1] },
+    transition: springSnappy,
   },
 }
 
 const ghostVariants = {
   rest: { y: 0, boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
-  hover: { y: -1, boxShadow: "0 0 0 0 rgba(0,0,0,0)", transition: { duration: 0.18 } },
-  tap: { y: 0, transition: { duration: 0.1 } },
+  hover: { y: -1, boxShadow: "0 0 0 0 rgba(0,0,0,0)", transition: springSnappy },
+  tap: { y: 0, transition: springSnappy },
 }
 
 export function Button({ label, href, variant = "primary", fullWidth = false, onTap, className }: ButtonProps) {
