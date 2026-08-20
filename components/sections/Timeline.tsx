@@ -254,7 +254,11 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.1, margin: "0px 0px -80px 0px" }}
+        // Same reachability issue as ProjectGrid: amount is a fraction of
+        // this container's own height, which grows with entry count and can
+        // exceed the viewport by several times on mobile — making a
+        // percentage threshold unreliable. 0 fires on first contact instead.
+        viewport={{ once: true, amount: 0, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
         // Entries measured above land ~18px low until this reveal settles
         // (fadeUp's hidden state is translateY(18px), and getBoundingClientRect

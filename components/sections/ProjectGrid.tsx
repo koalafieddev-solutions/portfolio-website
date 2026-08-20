@@ -59,7 +59,13 @@ export function ProjectGrid({
       <motion.div
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.15, margin: "0px 0px -80px 0px" }}
+        // amount is a fraction of the TARGET's own size, not the viewport's —
+        // for a tall single-column stack on mobile (this grid can run to
+        // 6000px+ once a project has several images), the viewport can never
+        // cover 15% of that height at once, so the threshold was literally
+        // unreachable and the whole grid sat at its hidden fadeUp opacity
+        // forever. 0 fires as soon as any sliver of the grid is on screen.
+        viewport={{ once: true, amount: 0, margin: "0px 0px -80px 0px" }}
         variants={staggerContainer}
         style={{
           display: "grid",
