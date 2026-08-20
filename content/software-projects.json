@@ -2,17 +2,41 @@
   {
     "title": "VR Micro World Systems",
     "description": "A VR exploration of miniature, tabletop-scale worlds — designing the interaction and scale systems needed to view and manipulate an entire environment from a god's-eye perspective.",
-    "tags": ["VR", "Interaction Design", "Scale Systems"]
+    "tags": ["VR", "Interaction Design", "Scale Systems"],
+    "images": [
+      { "src": "/images/software-projects/vr-micro-world-systems/micro-world-village-with-medieval-house.png", "alt": "A miniature grassy world with a medieval half-timbered house, pine trees, and a small rocket standing on the hillside" },
+      { "src": "/images/software-projects/vr-micro-world-systems/micro-world-hilltop-with-windmill-and-rocket.png", "alt": "A sunny miniature hilltop with a windmill, pine trees, and a toy rocket flying overhead against a blue sky" },
+      { "src": "/images/software-projects/vr-micro-world-systems/character-at-picnic-table-in-micro-world.png", "alt": "A character standing at a wooden picnic table inside a miniature world, surrounded by hedges and pine trees" },
+      { "src": "/images/software-projects/vr-micro-world-systems/ship-flying-over-micro-world-at-dusk.png", "alt": "A spaceship flying low over a miniature mountain landscape at dusk, with a huge glowing moon and a distant planet" },
+      { "src": "/images/software-projects/vr-micro-world-systems/toy-rocket-on-lunar-landing-platform.png", "alt": "A toy-like red and white rocket standing on a landing platform on an asteroid, with deep space and a nebula beyond" },
+      { "src": "/images/software-projects/vr-micro-world-systems/ship-on-micro-planet-gods-eye-view.png", "alt": "A god's-eye view of a tiny grassy and icy planet with a spaceship perched on its surface against deep space" },
+      { "src": "/images/software-projects/vr-micro-world-systems/ship-on-icy-planet-with-nebula-sky.png", "alt": "A gunmetal spaceship parked on an icy micro-planet under a starry purple nebula sky" }
+    ]
   },
   {
     "title": "Micro Voxel World Simulation",
     "description": "A contained voxel world simulation — the chunking, generation, and interaction systems needed to make a small-scale voxel environment feel alive and editable in real time.",
-    "tags": ["Voxel Systems", "Procedural Generation", "Simulation"]
+    "tags": ["Voxel Systems", "Procedural Generation", "Simulation"],
+    "images": [
+      { "src": "/images/software-projects/micro-voxel-world-simulation/voxel-terrain-loops-over-ocean.png", "alt": "Looping ribbons of voxel terrain over open ocean, with a test platform holding two small vehicles" },
+      { "src": "/images/software-projects/micro-voxel-world-simulation/voxel-island-with-twin-vehicle-platforms.png", "alt": "A wide shot of a floating voxel terrain island with two separate test platforms, each holding a vehicle" },
+      { "src": "/images/software-projects/micro-voxel-world-simulation/voxel-terrain-spiral-against-sunset.png", "alt": "A spiraling ribbon of voxel terrain against a pale sunset sky, with a test platform holding two vehicles" },
+      { "src": "/images/software-projects/micro-voxel-world-simulation/vehicle-gizmo-view-against-sunset.png", "alt": "A vehicle shown with editor gizmos at the edge of the voxel terrain, backlit by a dramatic sunset" },
+      { "src": "/images/software-projects/micro-voxel-world-simulation/vehicle-gizmo-view-on-checker-floor.png", "alt": "An overhead editor view of a vehicle with debug gizmos on a checkered test floor next to a voxel hillside" }
+    ]
   },
   {
     "title": "Advanced Multiplayer Systems Testing",
     "description": "A dedicated testbed for stress-testing replication, ownership, and RPC patterns under real network conditions — built to validate multiplayer systems before they ship, not after.",
-    "tags": ["Multiplayer", "Replication", "Network Testing"]
+    "tags": ["Multiplayer", "Replication", "Network Testing"],
+    "images": [
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/networked-destructible-wall-test.png", "alt": "A concrete test wall with several jagged holes blasted through it, revealing the sky beyond" },
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/networked-destruction-explosion-test.png", "alt": "A wooden structure exploding into debris and fire against a test warehouse wall and blue sky" },
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/replicated-inventory-ui-test.png", "alt": "A replicated inventory UI test showing an item grid and a selected weapon's stat tooltip" },
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/replicated-object-health-test-intact.png", "alt": "An intact rock prop with a health counter reading 40, staged for a replicated damage test" },
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/replicated-object-health-test-destroyed.png", "alt": "The same rock prop cracked and broken apart after taking damage, with the health counter still reading 40" },
+      { "src": "/images/software-projects/advanced-multiplayer-systems-testing/rpc-replication-radius-debug-view.png", "alt": "Red wireframe spheres visualizing RPC replication radii around networked objects on a test platform" }
+    ]
   },
   {
     "title": "Multiplayer Vehicle Physics",
@@ -31,8 +55,14 @@
   },
   {
     "title": "Top-Down Multiplayer Defense Systems",
-    "description": "A top-down multiplayer defense system — networked wave logic, unit placement, and shared-state coordination between players defending the same objective.",
-    "tags": ["Multiplayer", "Top-Down Gameplay", "Defense Systems"]
+    "description": "A top-down multiplayer defense system — networked wave logic, unit placement, and shared-state coordination between players defending the same objective, with the networking layer written in C++.",
+    "tags": ["Multiplayer", "Top-Down Gameplay", "Defense Systems", "C++"],
+    "images": [
+      { "src": "/images/software-projects/top-down-multiplayer-defense-systems/defense-board-overview-orange-vs-green.png", "alt": "A top-down defense board with orange and green teams of units scattered across a tan grid, connected by red targeting lines" },
+      { "src": "/images/software-projects/top-down-multiplayer-defense-systems/defense-board-with-core-target-node.png", "alt": "A defense board with a central core unit ringed by orbit indicators, targeted by red lines from surrounding units" },
+      { "src": "/images/software-projects/top-down-multiplayer-defense-systems/defense-board-mirrored-team-layout.png", "alt": "Orange and green teams mirrored on opposite sides of a green defense board, linked by crossing red targeting lines" },
+      { "src": "/images/software-projects/top-down-multiplayer-defense-systems/defense-board-close-up-targeting-lines.png", "alt": "A close-up of orange and green unit clusters on a green board with red targeting lines converging between them" }
+    ]
   },
   {
     "title": "Micro Planet Systems",
@@ -41,26 +71,52 @@
   },
   {
     "title": "Planetary Rover Simulation",
-    "description": "A rover traversal simulation with wheel-by-wheel suspension and terrain response — built to explore realistic locomotion over uneven, procedurally shaped ground.",
-    "tags": ["Vehicle Simulation", "Terrain Systems", "Physics"]
+    "description": "A rover traversal simulation with wheel-by-wheel suspension and terrain response — built to explore realistic locomotion over uneven, procedurally shaped ground, with gravity, driving, vehicle movement, and pawn multiplayer replication all written in C++.",
+    "tags": ["Vehicle Simulation", "Terrain Systems", "Physics", "C++"],
+    "images": [
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-cable-tether-in-rust-canyon.png", "alt": "An aerial view of the rover in a rust-orange canyon, tethered by a glowing cable to an anchor point" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-in-desert-canyon-at-dusk.png", "alt": "The rover crossing a rocky desert canyon at dusk, with a meteor streaking through the starry sky" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-wheel-physics-test-chamber.png", "alt": "The rover's wheel popping off mid-test inside a gridded physics test chamber" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-on-icy-alien-terrain.png", "alt": "The rover crossing a pale icy alien terrain scattered with crystalline rock spires" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-descending-icy-mountain-with-ringed-planet.png", "alt": "The rover descending a paved mountain road with a massive ringed planet filling the sky" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rovers-docked-at-purple-space-station.png", "alt": "Two rovers parked on a ramp docking into a glowing blue habitat dome under a violet night sky" },
+      { "src": "/images/software-projects/planetary-rover-simulation/rover-on-moon-with-ringed-planet.png", "alt": "The rover on a rocky moon surface with a glowing ringed planet rising in the background" }
+    ]
   },
   {
     "title": "Modular Spaceship Building System",
-    "description": "A modular construction system for assembling spaceships piece by piece — snapping, structural logic, and part-dependency systems adapted from architectural building kits to vehicle design.",
-    "tags": ["Modular Systems", "Vehicle Design", "Construction Systems"],
+    "description": "A modular construction system for assembling spaceships piece by piece — snapping, structural logic, and part-dependency systems adapted from architectural building kits to vehicle design, with gravity, building, driving, vehicle movement, and pawn multiplayer replication all written in C++.",
+    "tags": ["Modular Systems", "Vehicle Design", "Construction Systems", "C++"],
     "images": [
-      { "src": "/images/software-projects/modular-spaceship-building-system/assembled-modular-spacecraft.png", "alt": "A modular block-built spaceship assembled from snapped-together parts, floating near an asteroid field" }
+      { "src": "/images/software-projects/modular-spaceship-building-system/assembled-modular-spacecraft.png", "alt": "A modular block-built spaceship assembled from snapped-together parts, floating near an asteroid field" },
+      { "src": "/images/software-projects/modular-spaceship-building-system/thrusters-firing-through-asteroid-canyon.png", "alt": "The modular spaceship with thrusters firing, flying through a rocky asteroid canyon" },
+      { "src": "/images/software-projects/modular-spaceship-building-system/module-editor-dimension-view.png", "alt": "A single modular ship piece in the editor, with a dimension gizmo showing its 2.5m by 1.6m bounding box next to a reference scale pillar" }
     ]
   },
   {
     "title": "Real-Time Aerodynamics Simulation",
-    "description": "A real-time aerodynamic force simulation — lift, drag, and control-surface response computed live, bringing aerospace engineering fundamentals directly into the engine.",
-    "tags": ["Aerodynamics", "Real-Time Simulation", "Aerospace Engineering"]
+    "description": "A real-time aerodynamic force simulation — lift, drag, and control-surface response computed live in C++, bringing aerospace engineering fundamentals directly into the engine.",
+    "tags": ["Aerodynamics", "Real-Time Simulation", "Aerospace Engineering", "C++"],
+    "images": [
+      { "src": "/images/software-projects/real-time-aerodynamics-simulation/aircraft-studio-turntable-view.png", "alt": "A yellow and blue aerobatic aircraft on a dark studio turntable" },
+      { "src": "/images/software-projects/real-time-aerodynamics-simulation/aircraft-control-surface-debug-view.png", "alt": "The aircraft with color-coded wireframe debug boxes over its wings, tail, and propeller marking each control surface" },
+      { "src": "/images/software-projects/real-time-aerodynamics-simulation/aircraft-in-flight-against-blue-sky.png", "alt": "The aircraft banking in flight against a clear blue sky" }
+    ]
   },
   {
     "title": "Modular Rocket Building System",
     "description": "A modular rocket construction system in the spirit of Kerbal Space Program — staging, part attachment, and thrust-to-mass systems built from the ground up.",
-    "tags": ["Modular Systems", "Rocketry", "Staging Systems"]
+    "tags": ["Modular Systems", "Rocketry", "Staging Systems"],
+    "images": [
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-tumbling-mid-launch.png", "alt": "A rocket tumbling mid-launch with its engine firing, surrounded by scattered geometric debris" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-standalone-hero-shot.png", "alt": "A single white and black striped rocket standing on a tiled platform against a clear blue sky" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-staging-area-with-part-catalog.png", "alt": "Two rockets on a staging platform beside a catalog of dimension-labeled building parts" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-module-closeup-with-part-bins.png", "alt": "A close-up of a rocket module firing its engine, with a part catalog and component bins in the background" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-engine-nozzle-closeup.png", "alt": "A low-angle close-up of a rocket's engine nozzle and orange-paneled body against the sky" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-on-metallic-launch-platform.png", "alt": "A rocket firing its engine on a reflective metallic launch platform beside large storage tanks" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-aerial-view-with-violet-field.png", "alt": "An aerial view of a rocket on a curved platform, enclosed in a translucent violet trajectory field" },
+      { "src": "/images/software-projects/modular-rocket-building-system/rocket-flying-through-deep-space.png", "alt": "A multi-engine rocket flying through deep space past asteroids and a distant moon, engines ablaze" }
+    ]
   },
   {
     "title": "Dynamic Mesh Generation for Base Building",

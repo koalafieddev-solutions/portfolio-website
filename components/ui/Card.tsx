@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, useReducedMotion } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { color, radius, space, font } from "../../lib/theme"
 import { hoverLift, springSnappy } from "../../lib/animations"
 import { glassSurface } from "../../lib/glass"
@@ -13,114 +13,137 @@ export interface CardImage {
   alt?: string
 }
 
-const LOOP_INTERVAL_MS = 1000
-const FADE_DURATION_MS = 600
+const AUTO_ADVANCE_MS = 5000
+const FADE_DURATION_MS = 500
 
-// Crossfades on a fixed timer via two plain layers, hand-scheduled rather
-// than left to AnimatePresence's mount/exit lifecycle — that gave no way to
-// be certain the outgoing image stayed fully opaque for the *entire* fade
-// (its `exit` target only holds a value, it doesn't guarantee the browser
-// treats an unmount-pending element as still fully opaque throughout), and
-// in practice it was flashing the card's dark glass background at the
-// midpoint of every cycle.
-//
-// `bottom` is the settled, fully-revealed image — always opacity 1, never
-// transitions. `top` is the next image, fading 0 -> 1 on top of it. Because
-// `bottom` never dips below full opacity, the background can never show
-// through no matter where `top`'s fade currently is: the composite is
-// always `top*a + bottom*(1-a)`, and bottom alone already covers 100%.
-// Once `top` finishes revealing, it gets "baked" into `bottom` (an instant,
-// untransitioned swap — safe because at that instant bottom and top show
-// the identical image, so there's nothing to see even if it weren't
-// instant) and re-armed with the next image, ready to fade in again.
-function ImageLoop({ images, alt }: { images: CardImage[]; alt: string }) {
-  const reduceMotion = useReducedMotion()
-  const looping = images.length > 1 && !reduceMotion
-  const initialNextIndex = looping ? 1 % images.length : 0
-
-  const [bottomIndex, setBottomIndex] = React.useState(0)
-  const [topIndex, setTopIndex] = React.useState(initialNextIndex)
-  const [topVisible, setTopVisible] = React.useState(false)
-  const [transitionsEnabled, setTransitionsEnabled] = React.useState(true)
-
-  const topIndexRef = React.useRef(topIndex)
-  topIndexRef.current = topIndex
+// Drives the active index for a multi-image card: advances to the next
+// image every AUTO_ADVANCE_MS, and — because the effect is keyed off
+// `index` itself — a manual thumbnail click naturally re-arms the same 5s
+// window rather than fighting an interval that keeps its own schedule.
+function useGalleryIndex(length: number, reduceMotion: boolean) {
+  const [index, setIndex] = React.useState(0)
 
   React.useEffect(() => {
-    if (!looping) return
-    let cancelled = false
-    let revealTimer: ReturnType<typeof setTimeout>
-    let bakeTimer: ReturnType<typeof setTimeout>
-    let raf = 0
+    if (length <= 1 || reduceMotion) return
+    const timer = setTimeout(() => {
+      setIndex((i) => (i + 1) % length)
+    }, AUTO_ADVANCE_MS)
+    return () => clearTimeout(timer)
+  }, [index, length, reduceMotion])
 
-    function scheduleReveal() {
-      revealTimer = setTimeout(() => {
-        if (cancelled) return
-        setTopVisible(true)
-        bakeTimer = setTimeout(() => {
-          if (cancelled) return
-          // Transitions off + the bake + rearming the next index all land in
-          // one commit, so the browser never paints an in-between frame
-          // where `top` would visibly snap to the *next* future image
-          // before its opacity catches up.
-          setTransitionsEnabled(false)
-          setBottomIndex(topIndexRef.current)
-          setTopVisible(false)
-          setTopIndex((topIndexRef.current + 1) % images.length)
-          // Wait a real paint before re-enabling transitions, or React would
-          // batch that flip into the same commit as the reset above and the
-          // browser would never see a genuine "transitions: none" frame in
-          // between — meaning the *next* reveal's fade-in would also be
-          // skipped, since as far as the DOM is concerned `transition` never
-          // actually toggled off and back on.
-          raf = requestAnimationFrame(() => {
-            if (cancelled) return
-            setTransitionsEnabled(true)
-            scheduleReveal()
-          })
-        }, FADE_DURATION_MS)
-      }, LOOP_INTERVAL_MS - FADE_DURATION_MS)
-    }
+  return [index, setIndex] as const
+}
 
-    scheduleReveal()
-    return () => {
-      cancelled = true
-      clearTimeout(revealTimer)
-      clearTimeout(bakeTimer)
-      cancelAnimationFrame(raf)
-    }
-  }, [looping, images])
+// The main image itself, crossfading via AnimatePresence — old and new both
+// render, absolutely stacked, while their opacities cross, so there's no
+// gap for the card's dark glass background to show through mid-transition.
+function GalleryImage({ src, alt, reduceMotion }: { src: string; alt: string; reduceMotion: boolean }) {
+  const bgStyle: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    backgroundImage: `url(${src})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }
 
-  const bottom = images[bottomIndex]
-  const top = images[topIndex]
+  if (reduceMotion) {
+    return <div style={bgStyle} role="img" aria-label={alt} />
+  }
 
   return (
-    <div style={{ position: "absolute", inset: 0 }}>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: `url(${bottom.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+    <AnimatePresence initial={false}>
+      <motion.div
+        key={src}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: FADE_DURATION_MS / 1000, ease: "easeInOut" }}
+        style={bgStyle}
         role="img"
-        aria-label={bottom.alt ?? alt}
+        aria-label={alt}
       />
-      {looping ? (
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `url(${top.src})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: topVisible ? 1 : 0,
-            transition: transitionsEnabled ? `opacity ${FADE_DURATION_MS}ms ease-in-out` : "none",
+    </AnimatePresence>
+  )
+}
+
+// A plain horizontal filmstrip, laid out as its own row below the image
+// rather than layered on top of it — keeps the shot itself uncluttered and
+// reads as a distinct control rather than an overlay fighting the artwork.
+function GalleryThumbnails({
+  images,
+  index,
+  onSelect,
+  featured,
+}: {
+  images: CardImage[]
+  index: number
+  onSelect: (i: number) => void
+  featured: boolean
+}) {
+  const uid = React.useId()
+
+  return (
+    <div
+      style={{
+        flexBasis: "100%",
+        display: "flex",
+        gap: space.xs,
+        padding: `${space.xs}px ${featured ? space.lg : space.md}px`,
+        borderTop: `1px solid ${color.glassBorder}`,
+        overflowX: "auto",
+      }}
+    >
+      {images.map((img, i) => (
+        <button
+          key={img.src}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            onSelect(i)
           }}
-        />
-      ) : null}
+          aria-label={`Show image ${i + 1} of ${images.length}`}
+          aria-current={i === index}
+          style={{
+            position: "relative",
+            width: 44,
+            height: 30,
+            flexShrink: 0,
+            padding: 0,
+            border: "none",
+            background: "none",
+            cursor: "pointer",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${img.src})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              borderRadius: 3,
+              opacity: i === index ? 1 : 0.45,
+              transition: "opacity 200ms ease",
+            }}
+          />
+          {i === index ? (
+            <motion.div
+              layoutId={`${uid}-thumb-underline`}
+              transition={springSnappy}
+              style={{
+                position: "absolute",
+                left: 2,
+                right: 2,
+                bottom: -4,
+                height: 2,
+                borderRadius: 1,
+                backgroundColor: color.accentCyan,
+              }}
+            />
+          ) : null}
+        </button>
+      ))}
     </div>
   )
 }
@@ -200,8 +223,11 @@ export function Card({
   index,
 }: CardProps) {
   const tilt = use3DTilt()
+  const reduceMotion = useReducedMotion()
   const tagColors = tags && tags.length > 0 ? assignTagColors(tags) : []
   const loopImages = images && images.length > 0 ? images : image ? [image] : []
+  const [galleryIndex, setGalleryIndex] = useGalleryIndex(loopImages.length, !!reduceMotion)
+  const activeImage = loopImages[galleryIndex]
 
   const content = (
     <motion.div
@@ -255,7 +281,7 @@ export function Card({
               this image is a child of that, so it grows right along with
               it. A second scale on top of that compounded into the image
               visibly zooming faster than the rest of the card. */}
-          <ImageLoop images={loopImages} alt={title} />
+          <GalleryImage src={activeImage.src} alt={activeImage.alt ?? title} reduceMotion={!!reduceMotion} />
           {highlight ? (
             <span
               style={{
@@ -276,6 +302,10 @@ export function Card({
             </span>
           ) : null}
         </div>
+      ) : null}
+
+      {loopImages.length > 1 ? (
+        <GalleryThumbnails images={loopImages} index={galleryIndex} onSelect={setGalleryIndex} featured={featured} />
       ) : null}
 
       <div
