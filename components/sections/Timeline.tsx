@@ -149,17 +149,28 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
 
   const reduceMotion = useReducedMotion()
 
+  // Read fresh inside the loop rather than closed over, so a re-measurement
+  // (window resize, the post-reveal re-measure, web-font reflow) updates
+  // where the *next* lap travels to instead of tearing down and restarting
+  // the whole animation cycle — resize fires constantly on mobile as the
+  // browser chrome shows/hides while scrolling, and closing over the value
+  // in the effect's dependency array meant every one of those snapped the
+  // pulse back to the top mid-travel.
+  const targetTRef = React.useRef(0)
+  React.useEffect(() => {
+    const fallbackT = entries.length > 1 ? nowIndex / (entries.length - 1) : 0
+    targetTRef.current = nodeFractions[nowIndex] ?? fallbackT
+  }, [nodeFractions, nowIndex, entries.length])
+
   React.useEffect(() => {
     let cancelled = false
-    const fallbackT = entries.length > 1 ? nowIndex / (entries.length - 1) : 0
-    const targetT = nodeFractions[nowIndex] ?? fallbackT
 
     // Reduced motion: settle once on the "now" node — its glow stays lit
     // via NodeFlash reading the same `progress`/`pulseOpacity` values —
     // and skip the repeating travel/burst/particle cycle entirely rather
     // than just trimming its extras.
     if (reduceMotion) {
-      progress.set(targetT)
+      progress.set(targetTRef.current)
       pulseScale.set(1)
       pulseOpacity.set(1)
       return
@@ -171,7 +182,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
         pulseScale.set(1)
         pulseOpacity.set(1)
 
-        await animate(progress, targetT, { duration: TRAVEL_DURATION, ease: "linear" })
+        await animate(progress, targetTRef.current, { duration: TRAVEL_DURATION, ease: "linear" })
         if (cancelled) return
 
         // Arrival: a quick expand-and-settle pop on the dot itself, a
@@ -201,7 +212,7 @@ export function Timeline({ heading, subheading, entries }: TimelineProps) {
       cancelled = true
       if (sparkTimeoutRef.current) clearTimeout(sparkTimeoutRef.current)
     }
-  }, [progress, pulseScale, pulseOpacity, nodeFractions, nowIndex, entries.length, reduceMotion])
+  }, [progress, pulseScale, pulseOpacity, reduceMotion])
 
   const measure = React.useCallback(() => {
     const line = lineRef.current

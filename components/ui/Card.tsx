@@ -87,10 +87,10 @@ function GalleryThumbnails({
       style={{
         flexBasis: "100%",
         display: "flex",
+        flexWrap: "wrap",
         gap: space.xs,
         padding: `${space.xs}px ${featured ? space.lg : space.md}px`,
         borderTop: `1px solid ${color.glassBorder}`,
-        overflowX: "auto",
       }}
     >
       {images.map((img, i) => (
